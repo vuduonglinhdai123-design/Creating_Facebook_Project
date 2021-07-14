@@ -17,23 +17,60 @@
     crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
     integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
+  <link rel="stylesheet" href="/css/index.css">
 </head>
 
 <body>
-  
+
+  <div class="container">
+    <h2>FACEBOOK</h2>
+    <div class="slider">
+      <div class="slides">
+        <input type="radio" name="radio-btn" id="radio1">
+        <input type="radio" name="radio-btn" id="radio2">
+        <input type="radio" name="radio-btn" id="radio3">
+        <input type="radio" name="radio-btn" id="radio4">
+        <div class="slide first">
+          <img src="/img/facebook-users-people-diversity1-ss-1920.jpg" alt="">
+        </div>
+        <div class="slide">
+          <img src="/img/NRP-the_new_facebook.com-final-1.jpg" alt="">
+        </div>
+        <div class="slide">
+          <img src="/img/ofa_banner.jpg" alt="">
+        </div>
+        <div class="slide">
+          <img src="/img/Facebook-Messenger-co-gi-moi-1.jpg" alt="">
+        </div>
+        <div class="navigation-auto">
+          <div class="auto-btn1"></div>
+          <div class="auto-btn2"></div>
+          <div class="auto-btn3"></div>
+          <div class="auto-btn4"></div>
+        </div>
+      </div>
+      <div class="navigation-manual">
+        <label for="radio1" class="manual-btn"></label>
+        <label for="radio2" class="manual-btn"></label>
+        <label for="radio3" class="manual-btn"></label>
+        <label for="radio4" class="manual-btn"></label>
+      </div>
+    </div>
+    <h2><button onclick="login()">Sign in with facebook</button></h2>
+  </div>
 
 
 
-
-
-
-
-
-
-
-
-
+  <script type="text/javascript">
+    var counter = 1;
+    setInterval(function () {
+      document.getElementById('radio' + counter).checked = true;
+      counter++;
+      if (counter > 4) {
+        counter = 1;
+      }
+    }, 5000);
+  </script>
 
 
 
@@ -77,6 +114,8 @@
     firebase.analytics();
     firebase.auth().useDeviceLanguage();
   </script>
+
+  <script src="/js/index&messenger.js"></script>
 </body>
 
 </html>
