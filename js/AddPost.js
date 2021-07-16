@@ -4,13 +4,11 @@ class AddPost {
         this.content = document.createElement('textarea')
         this.button = document.createElement('button')
 
-        this.user.innerHTML = firebase.auth().currentUser
         this.button.innerHTML = 'Submit'
         this.button.onclick = this.upload()
     }
     render(container) {
         const div = document.createElement('div')
-        div.appendChild(this.user)
         div.appendChild(this.content)
         div.appendChild(this.button)
 
