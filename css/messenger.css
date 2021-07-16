@@ -98,6 +98,10 @@ h5 {
     margin-top: 10px;
 }
 
+.userMessage {
+    display: inline-block;
+}
+
 /* Chatting */
 .boxMessage-container {
     display: flex;
