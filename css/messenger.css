@@ -1,0 +1,242 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: white;
+}
+
+body {
+    background-color: var(--background-color);
+    max-height: 100vh;
+}
+
+/* Scrollbar style */
+::-webkit-scrollbar {
+    width: 12px;               /* width of the entire scrollbar */
+  }
+  
+::-webkit-scrollbar-track {
+    background: #2b2d2e;        /* color of the tracking area */
+  }
+  
+::-webkit-scrollbar-thumb {
+    background-color: #666768;    /* color of the scroll thumb */
+    border-radius: 20px;       /* roundness of the scroll thumb */
+}
+
+.row {
+    margin: 0;
+}
+
+nav {
+    border-bottom: 1px #393a3b solid;
+    height: 10vh;
+}
+
+.title {
+    color: var(--title-text-color);
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+.title:hover {
+    color: white;
+}
+
+.navbar-collapse {
+   display: flex;
+   justify-content: center;
+}
+
+.icons-container a i  {
+    font-size: 30px;
+    margin-right: 100px;
+    color: var(--icon-color);
+}
+
+.icons-container a i:hover {
+    color: white;
+}
+
+.boxUsers-container,
+.boxMessage-container {
+    border-right: 1px #393a3b solid;
+    height: 90vh;
+}
+
+.boxUser {
+    height: 80px;
+    margin-top: 40px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+} 
+
+.boxUser:hover {
+    background-color: #3a3b3c;
+}
+
+h5 {
+    font-size: 20px;
+    font-weight: 200;
+}
+
+.userAvatar{
+    margin-right: 5px;
+}
+
+.userAvatar img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.userName {
+    margin-top: 10px;
+}
+
+/* Chatting */
+.boxMessage-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.chatting-container {
+    height: 90%;
+    overflow: auto;
+}
+
+/* Heading Chatbox */
+
+
+.heading-chatBox {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding-top: 10px;
+    width: 100%;
+}
+
+.header-userImage {
+    margin-right: 10px;
+
+}
+
+.header-userImage  img {
+    width: 55px;
+    height: var(--header-userImage-height);
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.heading-userName {
+    font-size: 20px;
+    font-weight: 400;
+}
+
+/* Body Chatbox */
+
+.body-chatBox {
+    position: relative;
+    top: var(--header-userImage-height) ;
+}
+
+.senderBox-left,
+.senderBox-right {
+    display: flex;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.senderBox-left img,
+.senderBox-right img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.senderBox-left .sender-message {
+    margin-left: 10px;
+}
+
+.senderBox-left {
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.senderBox-right {
+    flex-direction: row;
+    justify-content: flex-end;
+    padding-right: 20px;
+}
+
+.senderBox-right .sender-message {
+    margin-right: 10px;
+}
+
+.sender-message {
+    height: 40px;
+    line-height: 40px;
+    background-color: #df205c;
+    border-radius: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.delete-btn {
+    background-color: #3e4042;
+    outline: none;
+    border: none;
+    cursor: pointer;
+}
+
+.delete-btn {
+    margin-right: 5px;
+}
+
+.delete-btn:hover {
+    background-color: gray;
+}
+
+.delete-btn:focus {
+    outline: none;
+}
+
+/* Footer Chatbox */
+.sending-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 10%;
+}
+
+.message {
+    position: relative;
+    width: 90%;
+    height: 40px;
+    border-radius: 100px;
+    border: none;
+    padding-left: 15px;
+    background-color: #3a3b3c;
+}
+
+.message:focus {
+    outline: none;
+    
+}
+
+.sending-btn-container {
+    width: 9%;
+}
+
+.sending-btn {
+    font-size: 30px;
+    cursor: pointer;
+}
+
+

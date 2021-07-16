@@ -6,7 +6,7 @@ function resolveAfter1Seconds() {
     return new Promise(resolve => {
         setTimeout(() => {
             resolve('resolved');
-        }, 1000);
+        }, 3000);
     });
 }
 
@@ -23,6 +23,8 @@ function login() {
             var user = result.user;
             console.log(user);
             // boxUser_Container.innerHTML = ""
+            localStorage.setItem('userData', JSON.stringify(user))
+
 
             db.collection("users").doc(`${user.uid}`).set({
                 name: user.displayName,
@@ -31,17 +33,9 @@ function login() {
                 docUserID: user.uid
             })
 
+            
+            // window.location.assign('/html/messenger.html');
 
-
-
-            // async function asyncCall() {
-            //     renderUserBox()
-            //     await resolveAfter1Seconds();
-            //     renderBoxChat_main(user)
-
-            // }
-
-            // asyncCall();
 
 
             // This gives you a Facebook Access Token. You can use it to access the Facebook API.
@@ -60,4 +54,13 @@ function login() {
 
             // ...
         });
+
+
 }
+
+    // async function asyncCall() {
+    //     login()
+    //     await resolveAfter1Seconds();
+    //     window.location.assign('/html/messenger.html');
+    // }
+    // asyncCall();

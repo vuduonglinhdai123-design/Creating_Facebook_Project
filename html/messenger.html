@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/css/root.css">
+    <link rel="stylesheet" href="/css/messenger.css">
+</head>
+
+<body>
+
+    <body onkeypress="return event.keyCode != 13">
+        <div class="container-fluid">
+            <nav class="navbar navbar-expand-lg row">
+                <a class="navbar-brand title" href="#">Facebook Chat</a>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav icons-container">
+                        <a href=""><i class="fas fa-home home-icon"></i></a>
+                        <a href=""><i class="far fa-user-circle user-icon"></i></a>
+                        <!-- <li class="nav-item active">
+                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Features</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Pricing</a>
+                        </li> -->
+                    </ul>
+                </div>
+            </nav>
+
+
+            <div class="main-container row">
+                <!-- Left: for boxusers -->
+                <div class="boxUsers-container col col-lg-3">
+                    <!-- <div class="boxUser">
+      
+              <div class="userAvatar">
+                <img src="ironman.jpg" alt="">
+              </div>
+              <h5 class="userName">UserName</h5>
+            </div> -->
+
+
+                </div>
+
+                <!-- MIDDLE: for chatting -->
+                <div class="boxMessage-container col col-lg-9">
+                    <div class="chatting-container">
+                        <!-- Header -->
+                        <div class="heading-chatBox">
+                            <!-- <div class="header-userImage">
+                    <img src="ironman.jpg" alt="">
+                    </div>
+                    <h5 class="heading-userName">UserName</h5> -->
+                        </div>
+
+                        <!-- Body -->
+                        <div class="body-chatBox">
+                            <!-- <div class="senderBox-left">
+                  <div class="sender-avatar">
+                    <img src="ironman.jpg" alt="">
+                  </div>
+                  <div class="sender-message">Message</div>
+                  <button class="delete-btn">Delete</button>
+      
+                </div>
+      
+                <div class="senderBox-right">
+                  <button class="delete-btn">Delete</button>
+                  <div class="sender-message">Message</div>
+                  <div class="sender-avatar">
+                    <img src="ironman.jpg" alt="">
+                  </div>
+                </div> -->
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Footer -->
+                    <div class="sending-container sticky-bottom">
+                        <input type="text" class="message" placeholder="Aa">
+                        <div class="sending-btn-container">
+                            <i class="fas fa-paper-plane sending-btn"></i>
+                        </div>
+                        <!-- <button type="button" class="sending-btn"><i class="fas fa-paper-plane sending-btn"></i></button> -->
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!-- load firebase  -->
+
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
+            integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+        <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+
+
+        <script>
+            // Your web app's Firebase configuration
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            var firebaseConfig = {
+                apiKey: "AIzaSyBkl8QCOMMPOI9wGtEIzhphFnSaeRKd5A8",
+                authDomain: "realtime-db-1c6f2.firebaseapp.com",
+                projectId: "realtime-db-1c6f2",
+                storageBucket: "realtime-db-1c6f2.appspot.com",
+                messagingSenderId: "5827041753",
+                appId: "1:5827041753:web:1b9c62c3a178861f9721c8",
+                measurementId: "G-53S9YE2EMY"
+            };
+
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
+            firebase.auth().useDeviceLanguage();
+        </script>
+
+        <script src="/js/messenger.js"></script>
+    </body>
+
+</html>
