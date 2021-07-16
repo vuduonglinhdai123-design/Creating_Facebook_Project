@@ -31,9 +31,6 @@ function login() {
                 docUserID: user.uid
             })
 
-
-
-
             // async function asyncCall() {
             //     renderUserBox()
             //     await resolveAfter1Seconds();
