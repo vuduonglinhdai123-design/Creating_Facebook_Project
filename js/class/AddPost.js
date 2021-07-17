@@ -24,7 +24,6 @@ class AddPost {
         })
     }
 }
-
-let add_post_container = document.querySelector('.add_post')
-let add_post_form = new AddPost()
-add_post_form.render(add_post_container)
+export {
+    AddPost
+}

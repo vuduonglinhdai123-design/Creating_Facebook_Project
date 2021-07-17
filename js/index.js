@@ -2,8 +2,6 @@ var db = firebase.firestore()
 var boxUser_Container = document.querySelector('.boxUsers-container')
 var message = document.querySelector('.message')
 
-document.querySelector('.login_container').style.display = 'block'
-document.querySelector('.homepage').style.display = 'none'
 
 function resolveAfter1Seconds() {
     return new Promise(resolve => {
@@ -63,11 +61,9 @@ function login() {
 
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
-        document.querySelector('.login_container').style.display = 'none'
-        document.querySelector('.homepage').style.display = 'block'; //After successful login, user will be redirected to home.html
+        window.location = 'homepage.html'
     } else {
-        document.querySelector('.login_container').style.display = 'block'
-        document.querySelector('.homepage').style.display = 'none'
+        window.location = 'index.html'
 
     }
 });

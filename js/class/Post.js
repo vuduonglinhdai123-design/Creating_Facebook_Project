@@ -19,11 +19,14 @@ class Post {
     }
 }
 
-db.collection('post').orderBy('timestamp', 'desc').get().then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-        const data = doc.data()
-        console.log(data);
-        let post = new Post(data.name, data.timestamp, data.content, data.likes, data.deleted)
-        post.render(document.querySelector('.all_posts'))
-    })
-})
+// db.collection('post').orderBy('timestamp', 'desc').get().then((querySnapshot) => {
+//     querySnapshot.forEach((doc) => {
+//         const data = doc.data()
+//         console.log(data);
+//         let post = new Post(data.name, data.timestamp, data.content, data.likes, data.deleted)
+//         post.render(document.querySelector('.all_posts'))
+//     })
+// })
+export {
+    Post
+}

@@ -65,6 +65,10 @@ nav {
     height: 90vh;
 }
 
+.boxUsers-container {
+    overflow: auto;
+}
+
 .boxUser {
     height: 80px;
     margin-top: 40px;
@@ -110,7 +114,6 @@ h5 {
 
 .chatting-container {
     height: 90%;
-    overflow: auto;
 }
 
 /* Heading Chatbox */
@@ -146,7 +149,9 @@ h5 {
 
 .body-chatBox {
     position: relative;
-    top: var(--header-userImage-height) ;
+    top: var(--header-userImage-height);
+    overflow: auto;
+    height: inherit;
 }
 
 .senderBox-left,
@@ -241,6 +246,7 @@ h5 {
 .sending-btn {
     font-size: 30px;
     cursor: pointer;
+    /* color: ; */
 }
 
 

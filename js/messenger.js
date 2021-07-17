@@ -10,7 +10,7 @@ function resolveAfter1Seconds() {
     return new Promise(resolve => {
         setTimeout(() => {
             resolve('resolved');
-        }, 1000);
+        }, 1500);
     });
 }
 
@@ -62,9 +62,10 @@ function renderBoxChat_main(user) {
             db.collection("users").doc(`${this.id}`)
                 .onSnapshot((doc) => {
                     var userData = doc.data()
-                    console.log();
+
                     renderBoxChat_heading(userData)
                     sendMessage(this.id, user)
+                    sendMessageByEnter(this.id, user)
                 });
         }
     }
@@ -112,7 +113,7 @@ function sendMessage(receiverUid, sender) {
                         })
                     }
                 });
-
+           
         }
         else {
             console.log("Enter your message");
@@ -120,6 +121,38 @@ function sendMessage(receiverUid, sender) {
     }
     renderMessage(receiverUid, sender)
 }
+
+
+function sendMessageByEnter(receiverUid, sender) {
+    document.querySelector('body').onkeypress = function (e) {
+        if (e.which === 13 && message.value != "") {
+            db.collection("message").doc(`${receiverUid}`)
+                .onSnapshot((doc) => {
+                    var messageData = doc.data()
+                    var object = {
+                        senderName: sender.displayName,
+                        message: message.value,
+                        senderImgURL: sender.photoURL,
+                        date: Date()
+                    }
+
+                    if (messageData) {
+                        db.collection('message').doc(`${receiverUid}`).update({
+                            message: firebase.firestore.FieldValue.arrayUnion(object)
+                        })
+                    }
+
+                    else {
+                        db.collection('message').doc(`${receiverUid}`).set({
+                            message: []
+                        })
+                    }
+                });
+        }
+    }
+}
+
+
 
 
 function renderMessage(receiverUid, sender) {
@@ -160,3 +193,10 @@ function renderMessage(receiverUid, sender) {
             })
         });
 }
+
+$(".bodyChatBox").animate({ scrollTop: $display[0].scrollHeight }, 'fast');
+
+
+// chatWindow = document.querySelector(".bodyChatBox"); 
+// var xH = chatWindow.scrollHeight; 
+// chatWindow.scrollTo(0, xH);
