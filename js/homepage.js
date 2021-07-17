@@ -14,12 +14,20 @@ postcontent.onkeyup = () => {
 }
 
 // Add Post
-function addPost(user, content,) {
+function addpost() {
+    const user = JSON.parse(localStorage.getItem('userData'))
+    console.log(user.name)
     db.collection('post').doc().set({
-        name: user,
-        content: content,
+        name: user.uid,
+        content: postcontent,
         deleted: false,
         likes: 0,
-        timestamp: Date.now()
+        timestamp: Date()
     })
+    .then(() => {
+        console.log("Document successfully written!");
+    })
+    .catch((error) => {
+        console.error("Error writing document: ", error);
+    });
 }
