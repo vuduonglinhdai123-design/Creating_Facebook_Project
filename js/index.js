@@ -35,7 +35,7 @@ function login() {
             })
 
 
-            window.location.assign('/html/messenger.html');
+            window.location.assign('/html/homepage.html');
 
             
             // firebase.auth().onAuthStateChanged(user => {
