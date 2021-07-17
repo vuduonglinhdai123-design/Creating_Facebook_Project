@@ -33,9 +33,20 @@ function login() {
                 imgURL: user.photoURL,
                 docUserID: user.uid
             })
-            
 
-            // window.location.assign('/html/messenger.html');
+
+            window.location.assign('/html/messenger.html');
+
+            
+            // firebase.auth().onAuthStateChanged(user => {
+            //     if (user) {
+            //         window.location = 'homepage.html'
+            //     } else {
+            //         window.location = 'index.html'
+
+            //     }
+            // });
+
 
 
 
@@ -59,14 +70,6 @@ function login() {
 
 }
 
-firebase.auth().onAuthStateChanged(user => {
-    if (user) {
-        window.location = 'homepage.html'
-    } else {
-        window.location = 'index.html'
-
-    }
-});
 
     // async function asyncCall() {
     //     login()
