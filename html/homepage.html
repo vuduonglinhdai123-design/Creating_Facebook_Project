@@ -17,26 +17,28 @@
         crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/index.css">
 </head>
 
 <body>
 
-
     <div class="container">
         <h2>FACEBOOK</h2>
-        <div class="add_post_form card text-white bg-dark" style='padding: 20px;'>
-            <form>
+
+
+        <div class="card text-white bg-dark" style='padding: 20px;'>
+            <form id='add_post_form'>
                 <h5>Add new post</h5>
-                <textarea class="form-control addpostcontent" name="content" id="content" cols="120" rows="7"
-                    required></textarea>
-                <button type='submit' class='btn postbutton' onclick="addpost()">Post</button>
+                <textarea class="form-control addpostcontent" name='addcontent' cols="120" rows="7" required></textarea>
+                <button onclick='addPost()' type="submit" class='btn postbutton'>Post</button>
             </form>
         </div>
+
+
         <div class="all_posts"></div>
     </div>
-
-
 
 
     <!-- load firebase  -->
