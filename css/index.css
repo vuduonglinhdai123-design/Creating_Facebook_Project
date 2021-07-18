@@ -17,7 +17,10 @@ h2 {
     font-size: 32px;
 }
 
-
+.facebookbut, .facebookbut:hover {
+    color: var(--title-text-color);
+    text-decoration: none;
+}
 button{
     width: 250px;
     height: 55px;

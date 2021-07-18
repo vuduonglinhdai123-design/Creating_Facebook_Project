@@ -1,11 +1,13 @@
 var db = firebase.firestore()
 var user = JSON.parse(localStorage.getItem('userData'))
 
-
 //disable/enable post button
 var postbutton = document.querySelector('.postbutton')
 var postcontent = document.querySelector('.addpostcontent')
 
+document.querySelector('.linktoprofile').innerHTML = `
+    <a href='profile.html'>${user.displayName}</a>
+`
 postbutton.disabled = true
 postcontent.onkeyup = () => {
     if (postcontent.value == '') {
@@ -14,11 +16,10 @@ postcontent.onkeyup = () => {
         postbutton.disabled = false
     }
 }
-   
 // Add Post
 function addPost() {
     db.collection("post").doc().set({
-        username: user.name,
+        username: user.displayName,
         userid: user.uid,
         content: postcontent.value,
         deleted: false,
@@ -49,3 +50,7 @@ function renderPost(user, content, likes) {
     `
     document.querySelector('.all_posts').innerHTML += html
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    postbutton.onclick = addPost
+})
