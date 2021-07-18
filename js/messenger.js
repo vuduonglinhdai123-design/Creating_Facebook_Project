@@ -1,3 +1,4 @@
+
 var db = firebase.firestore()
 var boxUser_Container = document.querySelector('.boxUsers-container')
 var user = JSON.parse(localStorage.getItem('userData'))
@@ -102,8 +103,12 @@ function sendMessage(receiverUid, sender) {
                     }
 
                     if (messageData) {
-                        db.collection('message').doc(`${receiverUid}`).update({
+                        db.collection('message').doc(`${receiverUid}`)
+                        .update({
                             message: firebase.firestore.FieldValue.arrayUnion(object)
+                        })
+                        .then(()=> {
+                            message.value = ""
                         })
                     }
 
@@ -137,8 +142,12 @@ function sendMessageByEnter(receiverUid, sender) {
                     }
 
                     if (messageData) {
-                        db.collection('message').doc(`${receiverUid}`).update({
+                        db.collection('message').doc(`${receiverUid}`)
+                        .update({
                             message: firebase.firestore.FieldValue.arrayUnion(object)
+                        })
+                        .then(()=> {
+                            message.value = ""
                         })
                     }
 
@@ -176,6 +185,7 @@ function renderMessage(receiverUid, sender) {
                     </div>
                     `
                     bodyChatBox.innerHTML += html
+                    bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
                     // boxUser_message.innerHTML = 'You:' + '' + objMessage.message
                 }
                 else {
@@ -188,15 +198,9 @@ function renderMessage(receiverUid, sender) {
                     </div>
                     `
                     bodyChatBox.innerHTML += html
+                    bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
                     // boxUser_message.innerH TML = objMessage.message
                 }
             })
         });
 }
-
-$(".bodyChatBox").animate({ scrollTop: $display[0].scrollHeight }, 'fast');
-
-
-// chatWindow = document.querySelector(".bodyChatBox"); 
-// var xH = chatWindow.scrollHeight; 
-// chatWindow.scrollTo(0, xH);

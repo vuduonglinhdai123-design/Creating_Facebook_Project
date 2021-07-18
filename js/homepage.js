@@ -37,7 +37,7 @@ db.collection("post").orderBy('timestamp', 'desc').get().then((querySnapshot) =>
     querySnapshot.forEach((doc) => {
         console.log(`${doc.id} => ${doc.data()}`);
         const data = doc.data()
-        renderPost(data.username, data.content, data.likes)
+        renderPost(data.username, data.content, data.likes,  document.querySelector('.all_posts'))
     });
 });
 
@@ -52,5 +52,5 @@ function renderPost(user, content, likes) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    postbutton.onclick = addPost
+    postbutton.onclick = addPost()
 })
