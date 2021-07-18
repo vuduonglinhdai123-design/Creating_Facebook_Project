@@ -16,7 +16,7 @@ db.collection('post').orderBy('timestamp', 'desc').get().then((querySnapshot) =>
         const data = doc.data()
         if (data.userid == user.uid) {
             console.log(data)
-            renderPost(data.username, data.content, data.likes, profilePage)
+            renderPost(data, profilePage)
         }
         // renderPost(data.username, data.content, data.likes)
     });
