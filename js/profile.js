@@ -22,6 +22,6 @@ db.collection('post').orderBy('timestamp', 'desc').get().then((querySnapshot) =>
     });
 });
 
-document.querySelector('.linktoprofile').innerHTML = `
-    <a href='profile.html'><img style=' border-radius: 50%' src=${user.photoURL}></a>
+document.querySelector('.userava').innerHTML = `
+    <img style=' border-radius: 50%' src=${user.photoURL}>
 `

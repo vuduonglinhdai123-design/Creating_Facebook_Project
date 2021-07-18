@@ -60,7 +60,15 @@ function login() {
 
 }
 
-
+document.querySelector('.logout').onclick = () => {
+    firebase.auth().signOut().then(() => {
+        // Sign-out successful.
+        localStorage.clear();
+        window.location.assign('/html/index.html')
+      }).catch((error) => {
+        // An error happened.
+      });
+}
 // async function asyncCall() {
 //     login()
 //     await resolveAfter1Seconds();

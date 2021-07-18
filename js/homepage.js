@@ -8,8 +8,8 @@ var postbutton = document.querySelector('.postbutton')
 var postcontent = document.querySelector('.addpostcontent')
 
 
-document.querySelector('.linktoprofile').innerHTML = `
-    <a href='profile.html'><img style=' border-radius: 50%' src=${user.photoURL}></a>
+document.querySelector('.userava').innerHTML = `
+    <img style=' border-radius: 50%' src=${user.photoURL}>
 `
 postbutton.disabled = true
 postcontent.onkeyup = () => {
@@ -20,7 +20,7 @@ postcontent.onkeyup = () => {
     }
 }
 // Add Post
-postbutton.onclick = function addPost() {
+postbutton.onclick = function () {
     if(postcontent.value) {
         db.collection("post").doc().set({
         username: user.displayName,
@@ -31,7 +31,7 @@ postbutton.onclick = function addPost() {
         timestamp: Date()
     }).then(() => {
         console.log("Document successfully written!");
-        window.location.reload()
+        // window.location.reload()
     })
     .catch((error) => {
         console.error("Error writing document: ", error);
@@ -42,11 +42,22 @@ postbutton.onclick = function addPost() {
     
 };
 
-db.collection("post").orderBy('timestamp', 'desc').get().then((querySnapshot) => {
+// db.collection("post").orderBy('timestamp', 'desc').get().then((querySnapshot) => {
+//     querySnapshot.forEach((doc) => {
+//         // console.log(`${doc.id} => ${doc.data()}`);
+//         const data = doc.data()
+//         if(data.deleted == false) {
+//             renderPost(doc.id, data, document.querySelector('.all_posts'))
+//         }
+//     });
+// });
+
+db.collection("post").orderBy('timestamp', 'desc').onSnapshot((querySnapshot) => {
+    document.querySelector('.all_posts').innerHTML = ''
     querySnapshot.forEach((doc) => {
         // console.log(`${doc.id} => ${doc.data()}`);
         const data = doc.data()
-        if(data.deleted == false) {
+        if(data.deleted == false ) {
             renderPost(doc.id, data, document.querySelector('.all_posts'))
         }
     });
