@@ -1,3 +1,5 @@
+import { renderPost } from "./module/renderPost.js"
+
 var db = firebase.firestore()
 var user = JSON.parse(localStorage.getItem('userData'))
 
@@ -37,19 +39,19 @@ db.collection("post").orderBy('timestamp', 'desc').get().then((querySnapshot) =>
     querySnapshot.forEach((doc) => {
         console.log(`${doc.id} => ${doc.data()}`);
         const data = doc.data()
-        renderPost(data.username, data.content, data.likes)
+        renderPost(data.username, data.content, data.likes,  document.querySelector('.all_posts'))
     });
 });
 
-function renderPost(user, content, likes) {
-    const html = `<div class='card text-white bg-dark'  style='padding: 20px;margin:20px 0px 0px 0px;'>
-        <h5>${user}</h5>
-        <p>${content}</p>
-        <i class="far fa-heart"></i><span>${likes}</span>
-    </div>
-    `
-    document.querySelector('.all_posts').innerHTML += html
-}
+// function renderPost(user, content, likes) {
+//     const html = `<div class='card text-white bg-dark'  style='padding: 20px;margin:20px 0px 0px 0px;'>
+//         <h5>${user}</h5>
+//         <p>${content}</p>
+//         <i class="far fa-heart"></i><span>${likes}</span>
+//     </div>
+//     `
+//     document.querySelector('.all_posts').innerHTML += html
+// }
 
 document.addEventListener('DOMContentLoaded', function() {
     postbutton.onclick = addPost
