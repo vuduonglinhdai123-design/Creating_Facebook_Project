@@ -16,8 +16,12 @@ db.collection('post').orderBy('timestamp', 'desc').get().then((querySnapshot) =>
         const data = doc.data()
         if (data.userid == user.uid) {
             console.log(data)
-            renderPost(data, profilePage)
+            renderPost(doc.id, data, profilePage)
         }
         // renderPost(data.username, data.content, data.likes)
     });
 });
+
+document.querySelector('.linktoprofile').innerHTML = `
+    <a href='profile.html'><img style=' border-radius: 50%' src=${user.photoURL}></a>
+`

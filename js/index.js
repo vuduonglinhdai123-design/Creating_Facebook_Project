@@ -37,7 +37,7 @@ function login() {
 
             window.location.assign('/html/homepage.html');
 
-            
+
             // firebase.auth().onAuthStateChanged(user => {
             //     if (user) {
             //         window.location = 'homepage.html'
@@ -71,9 +71,10 @@ function login() {
 }
 
 
-    // async function asyncCall() {
-    //     login()
-    //     await resolveAfter1Seconds();
-    //     window.location.assign('/html/messenger.html');
-    // }
-    // asyncCall();
+// async function asyncCall() {
+//     login()
+//     await resolveAfter1Seconds();
+//     window.location.assign('/html/messenger.html');
+// }
+// asyncCall();
+const user = JSON.parse(localStorage.getItem('userData'))

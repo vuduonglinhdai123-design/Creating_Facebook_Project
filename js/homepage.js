@@ -7,8 +7,9 @@ var user = JSON.parse(localStorage.getItem('userData'))
 var postbutton = document.querySelector('.postbutton')
 var postcontent = document.querySelector('.addpostcontent')
 
+
 document.querySelector('.linktoprofile').innerHTML = `
-    <a href='profile.html'>${user.displayName}</a>
+    <a href='profile.html'><img style=' border-radius: 50%' src=${user.photoURL}></a>
 `
 postbutton.disabled = true
 postcontent.onkeyup = () => {
@@ -40,7 +41,9 @@ db.collection("post").orderBy('timestamp', 'desc').get().then((querySnapshot) =>
     querySnapshot.forEach((doc) => {
         console.log(`${doc.id} => ${doc.data()}`);
         const data = doc.data()
-        renderPost(data, document.querySelector('.all_posts'))
+        if(data.deleted == false) {
+            renderPost(doc.id, data, document.querySelector('.all_posts'))
+        }
     });
 });
 
