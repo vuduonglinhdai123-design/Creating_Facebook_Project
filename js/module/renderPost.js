@@ -40,7 +40,7 @@ function renderPost(id, data, container) {
     container.innerHTML += html
 
     document.querySelector('.saveeditchanges').addEventListener('click', function () {
-        var change = document.querySelector('.editpostcontent').value
+        var change = document.querySelector('.editpostcontent').innerHTML
         console.log(change)
         if (change == data.content) {
             alert("You haven't changed anything")

@@ -67,4 +67,3 @@ function login() {
 //     window.location.assign('/html/messenger.html');
 // }
 // asyncCall();
-const user = JSON.parse(localStorage.getItem('userData'))

@@ -20,8 +20,9 @@ postcontent.onkeyup = () => {
     }
 }
 // Add Post
-function addPost() {
-    db.collection("post").doc().set({
+postbutton.onclick = function addPost() {
+    if(postcontent.value) {
+        db.collection("post").doc().set({
         username: user.displayName,
         userid: user.uid,
         content: postcontent.value,
@@ -35,11 +36,15 @@ function addPost() {
     .catch((error) => {
         console.error("Error writing document: ", error);
     });
+    } else {
+        alert('The content is empty')
+    }
+    
 };
 
 db.collection("post").orderBy('timestamp', 'desc').get().then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} => ${doc.data()}`);
+        // console.log(`${doc.id} => ${doc.data()}`);
         const data = doc.data()
         if(data.deleted == false) {
             renderPost(doc.id, data, document.querySelector('.all_posts'))
@@ -47,6 +52,3 @@ db.collection("post").orderBy('timestamp', 'desc').get().then((querySnapshot) =>
     });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    postbutton.onclick = addPost()
-})
