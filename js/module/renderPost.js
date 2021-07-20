@@ -16,12 +16,24 @@ function renderPost(id, data, container) {
         <p style='color: grey'>${data.timestamp.toDate()}</p>
         <p>${data.content}</p>
         <a data-like=${id} class='like-btn'><i class="far fa-heart" style='display: inline'></i></a><span>${data.likes} </span>
+        <hr>
+
+        <p>Comments</p>
+        <div class="comment-container">
+            <a class='show-comment' data-showcomment=${id}>Show comments</a>
+            <div class='comment-box'></div>
+        </div>
+
+        <div class='input-group mb-3 comment-input-container'>
+            <input type="text" class="form-control comment-content" placeholder="Comment here">
+            <div class="input-group-append">
+                <a class="btn btn-outline-secondary post-comment" type="button" data-postcomment=${id}>Comment</a>
+            </div>
+        </div>
+    </div>
     `
 
     container.innerHTML += html
-    // if (data.userid != user.uid) {
-    //     document.querySelector('.postmenu').style.display = 'none'
-    // }
 
     // archive post
     document.querySelectorAll('.archivepost').forEach(button => {
@@ -36,6 +48,34 @@ function renderPost(id, data, container) {
             likePost(this.dataset.like)
         }
     })
+
+    // show comments
+    document.querySelectorAll('.comment-container').forEach(div => {
+        var btn = div.querySelector('.show-comment')
+        var commentbox = div.querySelector('.comment-box')
+        btn.onclick = function () {
+            showComment(this.dataset.showcomment, commentbox)
+            btn.style.display = 'none'
+        }
+    })
+    
+    // display "Show comments" or not
+    document.querySelectorAll('.show-comment').forEach(btn => {
+        db.collection('post').doc(btn.dataset.showcomment).onSnapshot(doc => {
+            if (doc.data().comments.length != 0) btn.style.display = 'block'
+            else btn.style.display = 'none'
+        })
+    })
+
+    // post comment
+    document.querySelectorAll('.comment-input-container').forEach(div => {
+        var content = div.querySelector('.comment-content')
+        var btn = div.querySelector('.post-comment')
+        btn.onclick = function () {
+            postComment(this.dataset.postcomment, content.innerHTML)
+        }
+    })
+
 }
 
 function archive(id) {
@@ -60,7 +100,7 @@ function likePost(id) {
         ref.update({
             likeUsers: firebase.firestore.FieldValue.arrayUnion(userObject),
             likes: data.likes + 1
-        }) 
+        })
         data.likeUsers.map(function (liker) {
             if (liker.userid == user.uid) {
                 console.log(liker.userid)
@@ -73,6 +113,39 @@ function likePost(id) {
     })
 }
 
+function showComment(id, container) {
+    db.collection('post').doc(id).onSnapshot(doc => {
+        var comments = doc.data().comments
+        comments.map(function (comment) {
+            console.log(comment)
+            var html = `
+            <div style='margin: 5px;'>
+                <div><b>${comment.username}</b></div>
+                <div> ${comment.content}</div>
+            </div>
+            `
+            container.innerHTML += html
+        })
+    })
+}
+
+function postComment(id, content) {
+    if (content.value) {
+        var commentObject = {
+            userid: user.uid,
+            username: user.displayName,
+            content: content.value
+        }
+        db.collection('post').doc(id).update({
+            comments: firebase.firestore.FieldValue.arrayUnion(commentObject)
+        })
+            .then(() => {
+                console.log("your comment is successfully loaded")
+            })
+    } else {
+        alert('Your comment is empty!')
+    }
+}
 export {
     renderPost
 }
