@@ -15,12 +15,21 @@ function resolveAfter1Seconds() {
     });
 }
 
+function resolve() {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve('resolved');
+        }, 1000);
+    });
+}
+
 
 function start() {
     async function asyncCall() {
         renderUserBox()
         await resolveAfter1Seconds();
         renderBoxChat_main(user)
+
     }
     asyncCall();
 }
@@ -79,7 +88,7 @@ function renderBoxChat_heading(userData) {
         <div class="header-userImage">
             <img src=${userData.imgURL}>
         </div>
-        <h5 class="heading-userName">${userData.name}</h5>
+        <a><h5 class="heading-userName">${userData.name}</h5></a>
     `
     headingChatBox.innerHTML = htmls
 }
@@ -104,12 +113,12 @@ function sendMessage(receiverUid, sender) {
 
                     if (messageData) {
                         db.collection('message').doc(`${receiverUid}`)
-                        .update({
-                            message: firebase.firestore.FieldValue.arrayUnion(object)
-                        })
-                        .then(()=> {
-                            message.value = ""
-                        })
+                            .update({
+                                message: firebase.firestore.FieldValue.arrayUnion(object)
+                            })
+                            .then(() => {
+                                message.value = ""
+                            })
                     }
 
                     else {
@@ -118,13 +127,21 @@ function sendMessage(receiverUid, sender) {
                         })
                     }
                 });
-           
+
         }
         else {
             console.log("Enter your message");
         }
     }
     renderMessage(receiverUid, sender)
+
+
+    // async function asyncCall1() {
+    //     renderMessage(receiverUid, sender)
+    //     await resolve();
+    //     getDeletingMes(receiverUid)
+    // }
+    // asyncCall1();
 }
 
 
@@ -143,12 +160,12 @@ function sendMessageByEnter(receiverUid, sender) {
 
                     if (messageData) {
                         db.collection('message').doc(`${receiverUid}`)
-                        .update({
-                            message: firebase.firestore.FieldValue.arrayUnion(object)
-                        })
-                        .then(()=> {
-                            message.value = ""
-                        })
+                            .update({
+                                message: firebase.firestore.FieldValue.arrayUnion(object)
+                            })
+                            .then(() => {
+                                message.value = ""
+                            })
                     }
 
                     else {
@@ -166,7 +183,6 @@ function sendMessageByEnter(receiverUid, sender) {
 
 function renderMessage(receiverUid, sender) {
     var boxUser_message = document.querySelector('.userMessage')
-
     db.collection("message").doc(`${receiverUid}`)
         .onSnapshot((doc) => {
             var arrayMessage = doc.data().message
@@ -177,8 +193,8 @@ function renderMessage(receiverUid, sender) {
                 if (objMessage.senderName === sender.displayName) {
                     var html = `
                     <div class="senderBox-right">
-                        <button class="delete-btn" onclick="deleting(this, ${receiverUid})" name="${objMessage.senderName}" id="${objMessage.date}">Delete</button>
-                        <div class="sender-message">${objMessage.message}</div> 
+                        <button class="delete-btn" name="${objMessage.senderName}" id="${objMessage.date}" onclick="deleting(${receiverUid}, this)">Delete</button>
+                        <div class="sender-message" style=" background-color: #df205c;">${objMessage.message}</div> 
                         <div class="sender-avatar">
                             <img src="${objMessage.senderImgURL}" alt="">
                         </div>
@@ -194,7 +210,7 @@ function renderMessage(receiverUid, sender) {
                         <div class="sender-avatar">
                             <img src="${objMessage.senderImgURL}" alt="">
                         </div>
-                        <div class="sender-message">${objMessage.message}</div>
+                        <div class="sender-message" style=" background-color: #3e4042;">${objMessage.message}</div>
                     </div>
                     `
                     bodyChatBox.innerHTML += html
@@ -204,3 +220,28 @@ function renderMessage(receiverUid, sender) {
             })
         });
 }
+
+function deleting(receiverUid, btn) {
+    var messageElement = btn.parentElement
+    var object = {
+        senderName: btn.name,
+        message: messageElement.querySelector('.sender-message').innerHTML,
+        senderImgURL: messageElement.querySelector('img').src,
+        date: btn.id,
+    }
+    db.collection("message").doc(`${receiverUid.id}`)
+        .onSnapshot((doc) => {
+            var messageArray = doc.data().message
+            messageArray.find(function (messageObj) {
+                if (messageObj.senderName == object.senderName && messageObj.message == object.message && messageObj.senderImgURL == object.senderImgURL && messageObj.date == object.date) {
+                    db.collection('message').doc(`${receiverUid.id}`).update({
+                        message: firebase.firestore.FieldValue.arrayRemove(messageObj)
+                    });
+                    messageElement.remove(object)
+                }
+            })
+        });
+
+
+}
+

@@ -41,7 +41,7 @@ function renderPost(id, data, container) {
             archive(this.dataset.archive)
         }
         db.collection('post').doc(button.dataset.archive).get().then(doc => {
-            if(user.uid == doc.data().userid) {
+            if (user.uid == doc.data().userid) {
                 button.style.display = 'block'
             } else button.style.display = 'none'
         })
@@ -63,7 +63,7 @@ function renderPost(id, data, container) {
             btn.style.display = 'none'
         }
     })
-    
+
     // display "Show comments" or not
     document.querySelectorAll('.show-comment').forEach(btn => {
         db.collection('post').doc(btn.dataset.showcomment).onSnapshot(doc => {

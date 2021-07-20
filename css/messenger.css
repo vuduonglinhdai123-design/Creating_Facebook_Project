@@ -24,6 +24,11 @@ body {
     border-radius: 20px;       /* roundness of the scroll thumb */
 }
 
+a {
+    text-decoration: none;
+    color: var(--text-color);
+}
+
 .row {
     margin: 0;
 }
@@ -191,7 +196,7 @@ h5 {
 .sender-message {
     height: 40px;
     line-height: 40px;
-    background-color: #df205c;
+    /* background-color: #df205c; */
     border-radius: 50px;
     padding-left: 10px;
     padding-right: 10px;
