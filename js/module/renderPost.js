@@ -77,7 +77,7 @@ function renderPost(id, data, container) {
         var content = div.querySelector('.comment-content')
         var btn = div.querySelector('.post-comment')
         btn.onclick = function () {
-            postComment(this.dataset.postcomment, content.innerHTML)
+            postComment(this.dataset.postcomment, content)
         }
     })
 
@@ -135,6 +135,7 @@ function showComment(id, container) {
 }
 
 function postComment(id, content) {
+    console.log(content.value)
     if (content.value) {
         var commentObject = {
             userid: user.uid,
