@@ -40,6 +40,11 @@ function renderPost(id, data, container) {
         button.onclick = function () {
             archive(this.dataset.archive)
         }
+        db.collection('post').doc(button.dataset.archive).get().then(doc => {
+            if(user.uid == doc.data().userid) {
+                button.style.display = 'block'
+            } else button.style.display = 'none'
+        })
     })
 
     // like post
