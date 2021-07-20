@@ -1,5 +1,4 @@
 import { renderPost } from "./module/renderPost.js"
-import { editPost } from "./module/renderPost.js"
 
 var db = firebase.firestore()
 var user = JSON.parse(localStorage.getItem('userData'))
@@ -22,26 +21,28 @@ postcontent.onkeyup = () => {
 }
 // Add Post
 postbutton.onclick = function () {
-    if(postcontent.value) {
+    if (postcontent.value) {
         db.collection("post").doc().set({
-        username: user.displayName,
-        userid: user.uid,
-        content: postcontent.value,
-        deleted: false,
-        likes: 0,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp() 
-    }).then(() => {
-        postcontent.value = ''
-        console.log("Document successfully written!");
-        // window.location.reload()
-    })
-    .catch((error) => {
-        console.error("Error writing document: ", error);
-    });
+            username: user.displayName,
+            userid: user.uid,
+            content: postcontent.value,
+            deleted: false,
+            likes: 0,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            likeUser: [],
+            comments: []
+        }).then(() => {
+            postcontent.value = ''
+            console.log("Document successfully written!");
+            // window.location.reload()
+        })
+            .catch((error) => {
+                console.error("Error writing document: ", error);
+            });
     } else {
         alert('The content is empty')
     }
-    
+
 };
 
 
@@ -50,9 +51,21 @@ db.collection("post").orderBy('timestamp', 'desc').onSnapshot((querySnapshot) =>
     querySnapshot.forEach((doc) => {
         // console.log(`${doc.id} => ${doc.data()}`);
         const data = doc.data()
-    
-        if(data.deleted == false ) {
+        if (data.deleted == false) {
             renderPost(doc.id, data, document.querySelector('.all_posts'))
         }
+        // if (!data.likeUsers) {
+        //     db.collection('post').doc(doc.id).set({
+        //         likeUsers: []
+        //     }, {merge: true})
+        // }
     })
 });
+var userObject = {
+    userid: user.uid,
+    username: user.displayName
+}
+// db.collection("post").doc('XpS7MNFPMgK7joq5Tjm7').update({
+//     likeUsers: firebase.firestore.FieldValue.arrayUnion(userObject)
+    
+// })
