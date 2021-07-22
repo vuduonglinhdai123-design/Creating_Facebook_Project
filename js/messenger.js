@@ -99,6 +99,8 @@ function sendMessage(receiverUid, sender) {
 
     var sendingBtn = document.querySelector('.sending-btn')
     sendingBtn.onclick = function () {
+        var listEmoji = document.querySelector('.list-emoji')
+        listEmoji.classList.add('hide')
 
         if (message.value) {
             db.collection("message").doc(`${receiverUid}`)
@@ -134,20 +136,16 @@ function sendMessage(receiverUid, sender) {
         }
     }
     renderMessage(receiverUid, sender)
-
-
-    // async function asyncCall1() {
-    //     renderMessage(receiverUid, sender)
-    //     await resolve();
-    //     getDeletingMes(receiverUid)
-    // }
-    // asyncCall1();
+    sendEmoji()
 }
 
 
 function sendMessageByEnter(receiverUid, sender) {
     document.querySelector('body').onkeypress = function (e) {
         if (e.which === 13 && message.value != "") {
+            var listEmoji = document.querySelector('.list-emoji')
+            listEmoji.classList.add('hide')
+
             db.collection("message").doc(`${receiverUid}`)
                 .onSnapshot((doc) => {
                     var messageData = doc.data()
@@ -177,6 +175,24 @@ function sendMessageByEnter(receiverUid, sender) {
         }
     }
 }
+
+function sendEmoji() {
+    var smilingIcon = document.querySelector('.smiling-icon')
+    var emojiIcons = document.querySelectorAll('.emoji-icon')
+    var listEmoji = document.querySelector('.list-emoji')
+
+    for (var i = 0; i < emojiIcons.length; i++) {
+        emojiIcons[i].onclick = function () {
+            message.value += this.innerHTML
+        }
+    }
+
+    smilingIcon.onclick = function(e) {
+        listEmoji.classList.toggle('hide')
+        console.log(e.target);
+    }
+}
+
 
 
 
@@ -222,7 +238,9 @@ function renderMessage(receiverUid, sender) {
 }
 
 function deleting(receiverUid, btn) {
+
     var messageElement = btn.parentElement
+    console.log(messageElement);
     var object = {
         senderName: btn.name,
         message: messageElement.querySelector('.sender-message').innerHTML,
@@ -237,7 +255,7 @@ function deleting(receiverUid, btn) {
                     db.collection('message').doc(`${receiverUid.id}`).update({
                         message: firebase.firestore.FieldValue.arrayRemove(messageObj)
                     });
-                    messageElement.remove(object)
+                    bodyChatBox.remove(messageElement)
                 }
             })
         });
