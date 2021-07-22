@@ -1,5 +1,5 @@
 import { renderPost } from "./module/renderPost.js"
-
+import { renderUserProfile } from "./user.js"
 var db = firebase.firestore()
 var user = JSON.parse(localStorage.getItem('userData'))
 
@@ -69,3 +69,7 @@ var userObject = {
 //     likeUsers: firebase.firestore.FieldValue.arrayUnion(userObject)
     
 // })
+
+document.querySelector('.self-profile').onclick = function() {
+    renderUserProfile(user.uid, user.displayName)
+}
