@@ -30,26 +30,34 @@
         <nav class="navbar">
             <h2><a href='homepage.html' class='facebookbut'>FACEBOOK</a></h2>
             <div class="nav-item dropdown">
-                <a class="userava nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="userava nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class=" dropdown-item" href='profile.html'>Profile</a>
+                    <a class=" dropdown-item self-profile">Profile</a>
                     <a class=" dropdown-item" href='messenger.html'>Messenger</a>
-                  <a class="dropdown-item logout" href="#">Log out</a>
+                    <a class="dropdown-item logout" href="#">Log out</a>
                 </div>
             </div>
         </nav>
+        <div class="homepage">
+            <div class="card text-white bg-dark" style='padding: 20px;'>
+                <form id='add_post_form'>
+                    <h5>Add new post</h5>
+                    <textarea class="form-control addpostcontent" name='addcontent' cols="120" rows="7"
+                        required></textarea>
+                    <button type="button" class='btn btn-block postbutton'>Post</button>
+                </form>
+            </div>
 
-        <div class="card text-white bg-dark" style='padding: 20px;'>
-            <form id='add_post_form'>
-                <h5>Add new post</h5>
-                <textarea class="form-control addpostcontent" name='addcontent' cols="120" rows="7" required></textarea>
-                <button type="button" class='btn btn-block postbutton'>Post</button>
-            </form>
+
+            <div class="all_posts"></div>
         </div>
 
+        <div class="userprofile">
 
-        <div class="all_posts"></div>
+        </div>
+
     </div>
 
 

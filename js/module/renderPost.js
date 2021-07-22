@@ -1,3 +1,4 @@
+import { renderUserProfile } from "../user.js"
 var db = firebase.firestore()
 var user = JSON.parse(localStorage.getItem('userData'))
 
@@ -5,7 +6,7 @@ function renderPost(id, data, container) {
     var html = `
     <div class='card text-white bg-dark'  style='padding: 20px;margin:20px 0px 0px 0px; text-align:left'>
         <div>
-            <b>${data.username}</b> 
+            <b class='user' data-userid=${data.userid}><a>${data.username}</a></b> 
             <div class='dropdown dropleft postmenu' style='display: inline'>
                 <a data-toggle="dropdown" style='float: right'><span class='postmenu fas fa-ellipsis-h'></span></a>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -35,6 +36,12 @@ function renderPost(id, data, container) {
 
     container.innerHTML += html
 
+    document.querySelectorAll('.user').forEach(btn => {
+        btn.onclick = function() {
+            var name = this.innerHTML
+            renderUserProfile(this.dataset.userid, name)
+        }
+    })
     // archive post
     document.querySelectorAll('.archivepost').forEach(button => {
         button.onclick = function () {
