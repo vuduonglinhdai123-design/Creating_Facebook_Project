@@ -186,16 +186,18 @@ function sendEmoji() {
             message.value += this.innerHTML
         }
     }
-    
+
     document.querySelector('body').onclick = function (e) {
         if (e.target == smilingIcon) {
             listEmoji.classList.toggle('hide')
         }
-        else {
+  
+        else if(e.target !== listEmoji && e.target.parentElement !== listEmoji) {
             listEmoji.classList.add('hide')
         }
     }
 }
+
 
 
 
