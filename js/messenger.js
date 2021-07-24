@@ -186,14 +186,16 @@ function sendEmoji() {
             message.value += this.innerHTML
         }
     }
-
-    smilingIcon.onclick = function(e) {
-        listEmoji.classList.toggle('hide')
-        console.log(e.target);
+    
+    document.querySelector('body').onclick = function (e) {
+        if (e.target == smilingIcon) {
+            listEmoji.classList.toggle('hide')
+        }
+        else {
+            listEmoji.classList.add('hide')
+        }
     }
 }
-
-
 
 
 
@@ -238,8 +240,8 @@ function renderMessage(receiverUid, sender) {
 }
 
 function deleting(receiverUid, btn) {
-
     var messageElement = btn.parentElement
+
     console.log(messageElement);
     var object = {
         senderName: btn.name,
@@ -247,19 +249,38 @@ function deleting(receiverUid, btn) {
         senderImgURL: messageElement.querySelector('img').src,
         date: btn.id,
     }
-    db.collection("message").doc(`${receiverUid.id}`)
-        .onSnapshot((doc) => {
-            var messageArray = doc.data().message
-            messageArray.find(function (messageObj) {
-                if (messageObj.senderName == object.senderName && messageObj.message == object.message && messageObj.senderImgURL == object.senderImgURL && messageObj.date == object.date) {
-                    db.collection('message').doc(`${receiverUid.id}`).update({
-                        message: firebase.firestore.FieldValue.arrayRemove(messageObj)
-                    });
-                    bodyChatBox.remove(messageElement)
-                }
-            })
-        });
+
+    db.collection('message').doc(`${receiverUid.id}`)
+        .update({
+            message: firebase.firestore.FieldValue.arrayRemove(object)
+        })
+
+    // db.collection("message").doc(`${receiverUid.id}`)
+    //     .onSnapshot((doc) => {
+    //         var messageArray = doc.data().message
+    // messageArray.find(function (messageObj) {
+    //     if (messageObj.senderName == object.senderName && messageObj.message == object.message && messageObj.senderImgURL == object.senderImgURL && messageObj.date == object.date) {
+    //         db.collection('message').doc(`${receiverUid.id}`)
+    //             .update({
+    //                 message: firebase.firestore.FieldValue.arrayRemove(messageObj)
+    //             })
+    //             .then(() => {
+    //                 // messageElement.remove()
+    //             })
+    //     }
+    //     messageElement.remove()
+    // })
+    // });
 
 
 }
 
+db.collection('message').doc(`G80tzvFYmPT4XXlOQHxZWc8Y3b12`)
+    .update({
+        message: firebase.firestore.FieldValue.arrayRemove({
+            senderName: "Đài Vũ Dương Linh",
+            message: "1",
+            senderImgURL: "https://graph.facebook.com/1148426118994623/picture",
+            date: "Fri Jul 23 2021 23:51:15 GMT+0700 (Giờ Đông Dương)"
+        })
+    })
