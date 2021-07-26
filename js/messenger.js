@@ -1,4 +1,6 @@
+import { renderUserProfile } from "./user.js"
 
+var user = JSON.parse(localStorage.getItem('userData'))
 var db = firebase.firestore()
 var boxUser_Container = document.querySelector('.boxUsers-container')
 var user = JSON.parse(localStorage.getItem('userData'))
@@ -15,14 +17,6 @@ function resolveAfter1Seconds() {
     });
 }
 
-function resolve() {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            resolve('resolved');
-        }, 1000);
-    });
-}
-
 
 function start() {
     async function asyncCall() {
@@ -34,6 +28,9 @@ function start() {
     asyncCall();
 }
 
+document.querySelector('.self-profile_btn').onclick = function () {
+    renderUserProfile(user.uid, user.displayName)
+}
 
 function createBoxUser(user) {
     var html = `
@@ -74,8 +71,9 @@ function renderBoxChat_main(user) {
                     var userData = doc.data()
 
                     renderBoxChat_heading(userData)
-                    sendMessage(this.id, user)
+                    sendMessage(this.id, user, this)
                     sendMessageByEnter(this.id, user)
+
                 });
         }
     }
@@ -94,8 +92,12 @@ function renderBoxChat_heading(userData) {
 }
 
 
+
+
+
 // SENDING MESSAGE
-function sendMessage(receiverUid, sender) {
+
+function sendMessage(receiverUid, sender, boxUser) {
 
     var sendingBtn = document.querySelector('.sending-btn')
     sendingBtn.onclick = function () {
@@ -103,9 +105,10 @@ function sendMessage(receiverUid, sender) {
         listEmoji.classList.add('hide')
 
         if (message.value) {
-            db.collection("message").doc(`${receiverUid}`)
+            db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
                 .onSnapshot((doc) => {
                     var messageData = doc.data()
+                    console.log(messageData);
                     var object = {
                         senderName: sender.displayName,
                         message: message.value,
@@ -114,7 +117,7 @@ function sendMessage(receiverUid, sender) {
                     }
 
                     if (messageData) {
-                        db.collection('message').doc(`${receiverUid}`)
+                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
                             .update({
                                 message: firebase.firestore.FieldValue.arrayUnion(object)
                             })
@@ -124,7 +127,7 @@ function sendMessage(receiverUid, sender) {
                     }
 
                     else {
-                        db.collection('message').doc(`${receiverUid}`).set({
+                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
                             message: []
                         })
                     }
@@ -135,18 +138,17 @@ function sendMessage(receiverUid, sender) {
             console.log("Enter your message");
         }
     }
-    renderMessage(receiverUid, sender)
+    renderMessage(receiverUid, sender, boxUser)
     sendEmoji()
 }
 
-
 function sendMessageByEnter(receiverUid, sender) {
     document.querySelector('body').onkeypress = function (e) {
-        if (e.which === 13 && message.value != "") {
+        if (e.which === 13 && message.value !== "") {
             var listEmoji = document.querySelector('.list-emoji')
             listEmoji.classList.add('hide')
 
-            db.collection("message").doc(`${receiverUid}`)
+            db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
                 .onSnapshot((doc) => {
                     var messageData = doc.data()
                     var object = {
@@ -157,7 +159,7 @@ function sendMessageByEnter(receiverUid, sender) {
                     }
 
                     if (messageData) {
-                        db.collection('message').doc(`${receiverUid}`)
+                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
                             .update({
                                 message: firebase.firestore.FieldValue.arrayUnion(object)
                             })
@@ -191,19 +193,16 @@ function sendEmoji() {
         if (e.target == smilingIcon) {
             listEmoji.classList.toggle('hide')
         }
-  
-        else if(e.target !== listEmoji && e.target.parentElement !== listEmoji) {
+
+        else if (e.target !== listEmoji && e.target.parentElement !== listEmoji) {
             listEmoji.classList.add('hide')
         }
     }
 }
 
-
-
-
-function renderMessage(receiverUid, sender) {
-    var boxUser_message = document.querySelector('.userMessage')
-    db.collection("message").doc(`${receiverUid}`)
+function renderMessage(receiverUid, sender, boxUser) {
+    var boxUser_message = boxUser.querySelector('.userMessage')
+    db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
         .onSnapshot((doc) => {
             var arrayMessage = doc.data().message
             var bodyChatBox = document.querySelector('.body-chatBox')
@@ -222,7 +221,7 @@ function renderMessage(receiverUid, sender) {
                     `
                     bodyChatBox.innerHTML += html
                     bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
-                    // boxUser_message.innerHTML = 'You:' + '' + objMessage.message
+                    boxUser_message.innerHTML = 'You:' + ' ' + objMessage.message
                 }
                 else {
                     var html = `
@@ -235,27 +234,28 @@ function renderMessage(receiverUid, sender) {
                     `
                     bodyChatBox.innerHTML += html
                     bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
-                    // boxUser_message.innerH TML = objMessage.message
+                    boxUser_message.innerHTML = objMessage.message
                 }
             })
         });
 }
 
-function deleting(receiverUid, btn) {
-    var messageElement = btn.parentElement
 
-    console.log(messageElement);
-    var object = {
-        senderName: btn.name,
-        message: messageElement.querySelector('.sender-message').innerHTML,
-        senderImgURL: messageElement.querySelector('img').src,
-        date: btn.id,
-    }
+// function deleting(receiverUid, btn) {
+//     var messageElement = btn.parentElement
 
-    db.collection('message').doc(`${receiverUid.id}`)
-        .update({
-            message: firebase.firestore.FieldValue.arrayRemove(object)
-        })
+//     console.log(messageElement);
+//     var object = {
+//         senderName: btn.name,
+//         message: messageElement.querySelector('.sender-message').innerHTML,
+//         senderImgURL: messageElement.querySelector('img').src,
+//         date: btn.id,
+//     }
+
+//     db.collection('message').doc(`${receiverUid.id}`)
+//         .update({
+//             message: firebase.firestore.FieldValue.arrayRemove(object)
+//         })
 
     // db.collection("message").doc(`${receiverUid.id}`)
     //     .onSnapshot((doc) => {
@@ -275,14 +275,15 @@ function deleting(receiverUid, btn) {
     // });
 
 
-}
+// }
 
-db.collection('message').doc(`G80tzvFYmPT4XXlOQHxZWc8Y3b12`)
-    .update({
-        message: firebase.firestore.FieldValue.arrayRemove({
-            senderName: "Đài Vũ Dương Linh",
-            message: "1",
-            senderImgURL: "https://graph.facebook.com/1148426118994623/picture",
-            date: "Fri Jul 23 2021 23:51:15 GMT+0700 (Giờ Đông Dương)"
-        })
-    })
+// db.collection('message').doc(`G80tzvFYmPT4XXlOQHxZWc8Y3b12`)
+//     .update({
+//         message: firebase.firestore.FieldValue.arrayRemove({
+//             senderName: "Đài Vũ Dương Linh",
+//             message: "1",
+//             senderImgURL: "https://graph.facebook.com/1148426118994623/picture",
+//             date: "Fri Jul 23 2021 23:51:15 GMT+0700 (Giờ Đông Dương)"
+//         })
+//     })
+
