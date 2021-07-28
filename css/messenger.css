@@ -261,6 +261,7 @@ h5 {
     line-height: 40px;
     right: 10px;
     cursor: pointer;
+    color: #df205c;
 }
 
 .list-emoji {
@@ -289,7 +290,7 @@ h5 {
 .sending-btn {
     font-size: 30px;
     cursor: pointer;
-    /* color: ; */
+    color:#df205c ;
 }
 
 

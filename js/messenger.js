@@ -20,7 +20,7 @@ function resolveAfter1Seconds() {
 
 function start() {
     async function asyncCall() {
-        renderUserBox()
+        renderBoxUser()
         await resolveAfter1Seconds();
         renderBoxChat_main(user)
 
@@ -28,9 +28,6 @@ function start() {
     asyncCall();
 }
 
-document.querySelector('.self-profile_btn').onclick = function () {
-    renderUserProfile(user.uid, user.displayName)
-}
 
 function createBoxUser(user) {
     var html = `
@@ -45,11 +42,10 @@ function createBoxUser(user) {
       </div>
     `
     boxUser_Container.innerHTML += html
-
 }
 
 // get userInfo to render boxUser
-function renderUserBox() {
+function renderBoxUser() {
     db.collection("users").onSnapshot(function (snapshot) {
         snapshot.docChanges().forEach(function (change) {
 
@@ -73,11 +69,40 @@ function renderBoxChat_main(user) {
                     renderBoxChat_heading(userData)
                     sendMessage(this.id, user, this)
                     sendMessageByEnter(this.id, user)
-
+                    // showReceivingMessage(this.id)
                 });
         }
+
+        // renderBoxUserMessage(boxesUser[i], user)
     }
 }
+
+// function showReceivingMessage(userUid) {
+//     console.log(userUid);
+//     db.collection("message").doc(`${user.uid}`).collection('message').doc(`${userUid}`)
+//         .onSnapshot((doc) => {
+//             console.log(doc.data());
+//         })
+// }
+
+
+
+// function renderBoxUserMessage(boxUser) {
+//     db.collection("message").doc(`${boxUser.id}`).collection('message').doc(`${user.uid}`)
+//         .onSnapshot((doc) => {
+//             var messageArray = doc.data().message
+
+//             messageArray.map(function (objMessage) {
+//                 if (objMessage.senderName === user.displayName) {
+//                     boxUser.querySelector('.userMessage').innerHTML = 'You' + ' ' + objMessage.message
+//                 }
+//                 else {
+//                     boxUser.querySelector('.userMessage').innerHTML = objMessage.message
+
+//                 }
+//             })
+//         })
+// }
 
 
 function renderBoxChat_heading(userData) {
@@ -93,12 +118,9 @@ function renderBoxChat_heading(userData) {
 
 
 
-
-
 // SENDING MESSAGE
 
 function sendMessage(receiverUid, sender, boxUser) {
-
     var sendingBtn = document.querySelector('.sending-btn')
     sendingBtn.onclick = function () {
         var listEmoji = document.querySelector('.list-emoji')
@@ -108,7 +130,6 @@ function sendMessage(receiverUid, sender, boxUser) {
             db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
                 .onSnapshot((doc) => {
                     var messageData = doc.data()
-                    console.log(messageData);
                     var object = {
                         senderName: sender.displayName,
                         message: message.value,
@@ -117,7 +138,17 @@ function sendMessage(receiverUid, sender, boxUser) {
                     }
 
                     if (messageData) {
+                        // send to user doc
                         db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+                            .update({
+                                message: firebase.firestore.FieldValue.arrayUnion(object)
+                            })
+                            .then(() => {
+                                message.value = ""
+                            })
+
+                        //send to your doc
+                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
                             .update({
                                 message: firebase.firestore.FieldValue.arrayUnion(object)
                             })
@@ -127,7 +158,13 @@ function sendMessage(receiverUid, sender, boxUser) {
                     }
 
                     else {
+                        // send to user doc
                         db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
+                            message: []
+                        })
+
+                        //send to your doc
+                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
                             message: []
                         })
                     }
@@ -144,7 +181,7 @@ function sendMessage(receiverUid, sender, boxUser) {
 
 function sendMessageByEnter(receiverUid, sender) {
     document.querySelector('body').onkeypress = function (e) {
-        if (e.which === 13 && message.value !== "") {
+        if (e.which === 13 && message.value) {
             var listEmoji = document.querySelector('.list-emoji')
             listEmoji.classList.add('hide')
 
@@ -159,7 +196,17 @@ function sendMessageByEnter(receiverUid, sender) {
                     }
 
                     if (messageData) {
+                        // send to user doc
                         db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+                            .update({
+                                message: firebase.firestore.FieldValue.arrayUnion(object)
+                            })
+                            .then(() => {
+                                message.value = ""
+                            })
+
+                        //send to your doc
+                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
                             .update({
                                 message: firebase.firestore.FieldValue.arrayUnion(object)
                             })
@@ -169,7 +216,13 @@ function sendMessageByEnter(receiverUid, sender) {
                     }
 
                     else {
-                        db.collection('message').doc(`${receiverUid}`).set({
+                        // send to user doc
+                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
+                            message: []
+                        })
+
+                        //send to your doc
+                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
                             message: []
                         })
                     }
@@ -200,8 +253,7 @@ function sendEmoji() {
     }
 }
 
-function renderMessage(receiverUid, sender, boxUser) {
-    var boxUser_message = boxUser.querySelector('.userMessage')
+function renderMessage(receiverUid, sender) {
     db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
         .onSnapshot((doc) => {
             var arrayMessage = doc.data().message
@@ -209,6 +261,7 @@ function renderMessage(receiverUid, sender, boxUser) {
             bodyChatBox.innerHTML = ""
 
             arrayMessage.map(function (objMessage) {
+
                 if (objMessage.senderName === sender.displayName) {
                     var html = `
                     <div class="senderBox-right">
@@ -221,7 +274,6 @@ function renderMessage(receiverUid, sender, boxUser) {
                     `
                     bodyChatBox.innerHTML += html
                     bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
-                    boxUser_message.innerHTML = 'You:' + ' ' + objMessage.message
                 }
                 else {
                     var html = `
@@ -234,7 +286,6 @@ function renderMessage(receiverUid, sender, boxUser) {
                     `
                     bodyChatBox.innerHTML += html
                     bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
-                    boxUser_message.innerHTML = objMessage.message
                 }
             })
         });
@@ -257,22 +308,22 @@ function renderMessage(receiverUid, sender, boxUser) {
 //             message: firebase.firestore.FieldValue.arrayRemove(object)
 //         })
 
-    // db.collection("message").doc(`${receiverUid.id}`)
-    //     .onSnapshot((doc) => {
-    //         var messageArray = doc.data().message
-    // messageArray.find(function (messageObj) {
-    //     if (messageObj.senderName == object.senderName && messageObj.message == object.message && messageObj.senderImgURL == object.senderImgURL && messageObj.date == object.date) {
-    //         db.collection('message').doc(`${receiverUid.id}`)
-    //             .update({
-    //                 message: firebase.firestore.FieldValue.arrayRemove(messageObj)
-    //             })
-    //             .then(() => {
-    //                 // messageElement.remove()
-    //             })
-    //     }
-    //     messageElement.remove()
-    // })
-    // });
+// db.collection("message").doc(`${receiverUid.id}`)
+//     .onSnapshot((doc) => {
+//         var messageArray = doc.data().message
+// messageArray.find(function (messageObj) {
+//     if (messageObj.senderName == object.senderName && messageObj.message == object.message && messageObj.senderImgURL == object.senderImgURL && messageObj.date == object.date) {
+//         db.collection('message').doc(`${receiverUid.id}`)
+//             .update({
+//                 message: firebase.firestore.FieldValue.arrayRemove(messageObj)
+//             })
+//             .then(() => {
+//                 // messageElement.remove()
+//             })
+//     }
+//     messageElement.remove()
+// })
+// });
 
 
 // }
