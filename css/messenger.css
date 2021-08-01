@@ -170,11 +170,31 @@ h5 {
     margin-top: 30px;
 }
 
-.senderBox-left img,
-.senderBox-right img {
+.senderBox-left .sender-avatar img,
+.senderBox-right .sender-avatar img {
     width: 35px;
     height: 35px;
     border-radius: 50%;
+    object-fit: cover;
+}
+
+.senderBox-right .sender-img {
+    height: 300px;
+    width: 300px;
+    margin-right: 10px;
+}
+
+.senderBox-left .sender-img {
+    height: 300px;
+    width: 300px;
+    margin-left: 10px;
+}
+
+.senderBox-left .sender-img img,
+.senderBox-right .sender-img img{
+    height: inherit;
+    width: inherit;
+    border-radius: 10px;
     object-fit: cover;
 }
 
@@ -236,10 +256,38 @@ h5 {
 .sending-box {
     position: relative;
     display: flex;
+    align-items: center;
     width: 100%;
 }
 
+.image-icon {
+    font-size: 33px;
+    margin-right: 10px;
+    cursor: pointer;
+    color:#df205c;
+}
 
+.input-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.sending_img-container {
+    height: 60px;
+    width: 7%;
+    bottom: 45px;
+    border-radius: 10px;
+    position: absolute;
+    background-color: #3a3b3c;
+}
+
+.sending_img-container img {
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
 
 .message {
     position: relative;
@@ -290,7 +338,7 @@ h5 {
 .sending-btn {
     font-size: 30px;
     cursor: pointer;
-    color:#df205c ;
+    color:#df205c;
 }
 
 

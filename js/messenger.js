@@ -2,6 +2,8 @@ import { renderUserProfile } from "./user.js"
 
 var user = JSON.parse(localStorage.getItem('userData'))
 var db = firebase.firestore()
+var ImgName, ImgUrl;
+var files = []
 var boxUser_Container = document.querySelector('.boxUsers-container')
 var user = JSON.parse(localStorage.getItem('userData'))
 var message = document.querySelector('.message')
@@ -48,9 +50,8 @@ function createBoxUser(user) {
 function renderBoxUser() {
     db.collection("users").onSnapshot(function (snapshot) {
         snapshot.docChanges().forEach(function (change) {
-
             var data = change.doc.data()
-            if (change.type == "added") {
+            if (change.type == "added" && data.docUserID !== user.uid) {
                 createBoxUser(data)
             }
         })
@@ -69,40 +70,32 @@ function renderBoxChat_main(user) {
                     renderBoxChat_heading(userData)
                     sendMessage(this.id, user, this)
                     sendMessageByEnter(this.id, user)
-                    // showReceivingMessage(this.id)
+                    sendImage(this.id, user)
                 });
         }
 
-        // renderBoxUserMessage(boxesUser[i], user)
+        renderBoxUserMessage(boxesUser[i], user)
     }
 }
 
-// function showReceivingMessage(userUid) {
-//     console.log(userUid);
-//     db.collection("message").doc(`${user.uid}`).collection('message').doc(`${userUid}`)
-//         .onSnapshot((doc) => {
-//             console.log(doc.data());
-//         })
-// }
 
 
+function renderBoxUserMessage(boxUser) {
+    db.collection("message").doc(`${boxUser.id}`).collection('message').doc(`${user.uid}`)
+        .onSnapshot((doc) => {
+            var messageArray = doc.data().message
 
-// function renderBoxUserMessage(boxUser) {
-//     db.collection("message").doc(`${boxUser.id}`).collection('message').doc(`${user.uid}`)
-//         .onSnapshot((doc) => {
-//             var messageArray = doc.data().message
+            messageArray.map(function (objMessage) {
+                if (objMessage.senderName === user.displayName) {
+                    boxUser.querySelector('.userMessage').innerHTML = 'You' + ' ' + objMessage.message
+                }
+                else {
+                    boxUser.querySelector('.userMessage').innerHTML = objMessage.message
 
-//             messageArray.map(function (objMessage) {
-//                 if (objMessage.senderName === user.displayName) {
-//                     boxUser.querySelector('.userMessage').innerHTML = 'You' + ' ' + objMessage.message
-//                 }
-//                 else {
-//                     boxUser.querySelector('.userMessage').innerHTML = objMessage.message
-
-//                 }
-//             })
-//         })
-// }
+                }
+            })
+        })
+}
 
 
 function renderBoxChat_heading(userData) {
@@ -121,60 +114,60 @@ function renderBoxChat_heading(userData) {
 // SENDING MESSAGE
 
 function sendMessage(receiverUid, sender, boxUser) {
-    var sendingBtn = document.querySelector('.sending-btn')
-    sendingBtn.onclick = function () {
-        var listEmoji = document.querySelector('.list-emoji')
-        listEmoji.classList.add('hide')
+    // var sendingBtn = document.querySelector('.sending-btn')
+    // sendingBtn.onclick = function () {
+    //     var listEmoji = document.querySelector('.list-emoji')
+    //     listEmoji.classList.add('hide')
 
-        if (message.value) {
-            db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-                .onSnapshot((doc) => {
-                    var messageData = doc.data()
-                    var object = {
-                        senderName: sender.displayName,
-                        message: message.value,
-                        senderImgURL: sender.photoURL,
-                        date: Date()
-                    }
+    //     if (message.value) {
+    //         db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+    //             .onSnapshot((doc) => {
+    //                 var messageData = doc.data()
+    //                 var object = {
+    //                     senderName: sender.displayName,
+    //                     message: message.value,
+    //                     senderImgURL: sender.photoURL,
+    //                     date: Date()
+    //                 }
 
-                    if (messageData) {
-                        // send to user doc
-                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-                            .update({
-                                message: firebase.firestore.FieldValue.arrayUnion(object)
-                            })
-                            .then(() => {
-                                message.value = ""
-                            })
+    //                 if (messageData) {
+    //                     // send to user doc
+    //                     db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+    //                         .update({
+    //                             message: firebase.firestore.FieldValue.arrayUnion(object)
+    //                         })
+    //                         .then(() => {
+    //                             message.value = ""
+    //                         })
 
-                        //send to your doc
-                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
-                            .update({
-                                message: firebase.firestore.FieldValue.arrayUnion(object)
-                            })
-                            .then(() => {
-                                message.value = ""
-                            })
-                    }
+    //                     //send to your doc
+    //                     db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
+    //                         .update({
+    //                             message: firebase.firestore.FieldValue.arrayUnion(object)
+    //                         })
+    //                         .then(() => {
+    //                             message.value = ""
+    //                         })
+    //                 }
 
-                    else {
-                        // send to user doc
-                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
-                            message: []
-                        })
+    //                 else {
+    //                     // send to user doc
+    //                     db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
+    //                         message: []
+    //                     })
 
-                        //send to your doc
-                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
-                            message: []
-                        })
-                    }
-                });
+    //                     //send to your doc
+    //                     db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
+    //                         message: []
+    //                     })
+    //                 }
+    //             });
 
-        }
-        else {
-            console.log("Enter your message");
-        }
-    }
+    //     }
+    //     else {
+    //         console.log("Enter your message");
+    //     }
+    // }
     renderMessage(receiverUid, sender, boxUser)
     sendEmoji()
 }
@@ -253,6 +246,79 @@ function sendEmoji() {
     }
 }
 
+function sendImage(receiverUid, sender) {
+    document.querySelector('.image-icon').onclick = function () {
+        var input = document.createElement('input')
+        input.type = "file"
+        input.onchange = e => {
+            files = e.target.files
+            var reader = new FileReader()
+
+            reader.onload = function () {
+                document.querySelector('.sending_img-container').classList.remove("hide")
+                var imgURL = reader.result
+                var img = document.getElementById('myImg')
+                img.src = imgURL
+
+                handleSendingImage(img, receiverUid, sender)
+            }
+            reader.readAsDataURL(files[0])
+        }
+        input.click()
+    }
+}
+
+function handleSendingImage(img, receiverUid, sender) {
+    var sendingBtn = document.querySelector('.sending-btn')
+    sendingBtn.onclick = function () {
+        if (img) {
+            db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+                .onSnapshot((doc) => {
+                    var messageData = doc.data()
+
+                    var object = {
+                        senderName: sender.displayName,
+                        imgURL: img.src,
+                        senderImgURL: sender.photoURL,
+                        date: Date()
+                    }
+
+                    if (messageData) {
+                        // send to user doc
+                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+                            .update({
+                                message: firebase.firestore.FieldValue.arrayUnion(object)
+                            })
+                            .then(() => {
+                                message.value = ""
+                            })
+
+                        //send to your doc
+                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
+                            .update({
+                                message: firebase.firestore.FieldValue.arrayUnion(object)
+                            })
+                            .then(() => {
+                                message.value = ""
+                            })
+                    }
+
+                    else {
+                        // send to user doc
+                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
+                            message: []
+                        })
+
+                        //send to your doc
+                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
+                            message: []
+                        })
+                    }
+                })
+        }
+    }
+}
+
 function renderMessage(receiverUid, sender) {
     db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
         .onSnapshot((doc) => {
@@ -261,31 +327,62 @@ function renderMessage(receiverUid, sender) {
             bodyChatBox.innerHTML = ""
 
             arrayMessage.map(function (objMessage) {
-
                 if (objMessage.senderName === sender.displayName) {
-                    var html = `
-                    <div class="senderBox-right">
-                        <button class="delete-btn" name="${objMessage.senderName}" id="${objMessage.date}" onclick="deleting(${receiverUid}, this)">Delete</button>
-                        <div class="sender-message" style=" background-color: #df205c;">${objMessage.message}</div> 
-                        <div class="sender-avatar">
-                            <img src="${objMessage.senderImgURL}" alt="">
+                    if (objMessage.message) {
+                        var html = `
+                        <div class="senderBox-right">
+                            <button class="delete-btn" name="${objMessage.senderName}" id="${objMessage.date}" onclick="deleting(${receiverUid}, this)">Delete</button>
+                            <div class="sender-message" style=" background-color: #df205c;">${objMessage.message}</div> 
+                            <div class="sender-avatar">
+                                <img src="${objMessage.senderImgURL}" alt="">
+                            </div>
                         </div>
-                    </div>
-                    `
-                    bodyChatBox.innerHTML += html
-                    bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
+                        `
+                        bodyChatBox.innerHTML += html
+                        bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
+                    }
+                    else if (objMessage.imgURL) {
+                        var html = `
+                        <div class="senderBox-right">
+                            <div class="sender-img">
+                                <img src="${objMessage.imgURL}" alt="">
+                            </div>
+                            <div class="sender-avatar">
+                                <img src="${objMessage.senderImgURL}" alt="">
+                            </div>
+                        </div>
+                        `
+                        bodyChatBox.innerHTML += html
+                        bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
+                    }
                 }
                 else {
-                    var html = `
-                    <div class="senderBox-left">
-                        <div class="sender-avatar">
-                            <img src="${objMessage.senderImgURL}" alt="">
+                    if (objMessage.message) {
+                        var html = `
+                        <div class="senderBox-left">
+                            <div class="sender-avatar">
+                                <img src="${objMessage.senderImgURL}" alt="">
+                            </div>
+                            <div class="sender-message" style=" background-color: #3e4042;">${objMessage.message}</div>
                         </div>
-                        <div class="sender-message" style=" background-color: #3e4042;">${objMessage.message}</div>
-                    </div>
-                    `
-                    bodyChatBox.innerHTML += html
-                    bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
+                        `
+                        bodyChatBox.innerHTML += html
+                        bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
+                    }
+                    else if (objMessage.imgURL) {
+                        var html = `
+                        <div class="senderBox-left">
+                            <div class="sender-avatar">
+                                <img src="${objMessage.senderImgURL}" alt="">
+                            </div>
+                            <div class="sender-img">
+                                <img src="${objMessage.imgURL}" alt="">
+                            </div>
+                        </div>
+                        `
+                        bodyChatBox.innerHTML += html
+                        bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
+                    }
                 }
             })
         });
