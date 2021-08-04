@@ -1,8 +1,5 @@
-import { renderUserProfile } from "./user.js"
-
 var user = JSON.parse(localStorage.getItem('userData'))
 var db = firebase.firestore()
-var ImgName, ImgUrl;
 var files = []
 var boxUser_Container = document.querySelector('.boxUsers-container')
 var user = JSON.parse(localStorage.getItem('userData'))
@@ -70,15 +67,13 @@ function renderBoxChat_main(user) {
                     renderBoxChat_heading(userData)
                     sendMessage(this.id, user, this)
                     sendMessageByEnter(this.id, user)
-                    sendImage(this.id, user)
+                    // sendImage(this.id, user)
                 });
         }
 
         renderBoxUserMessage(boxesUser[i], user)
     }
 }
-
-
 
 function renderBoxUserMessage(boxUser) {
     db.collection("message").doc(`${boxUser.id}`).collection('message').doc(`${user.uid}`)
@@ -87,7 +82,7 @@ function renderBoxUserMessage(boxUser) {
 
             messageArray.map(function (objMessage) {
                 if (objMessage.senderName === user.displayName) {
-                    boxUser.querySelector('.userMessage').innerHTML = 'You' + ' ' + objMessage.message
+                    boxUser.querySelector('.userMessage').innerHTML = 'You:' + ' ' + objMessage.message
                 }
                 else {
                     boxUser.querySelector('.userMessage').innerHTML = objMessage.message
@@ -114,60 +109,60 @@ function renderBoxChat_heading(userData) {
 // SENDING MESSAGE
 
 function sendMessage(receiverUid, sender, boxUser) {
-    // var sendingBtn = document.querySelector('.sending-btn')
-    // sendingBtn.onclick = function () {
-    //     var listEmoji = document.querySelector('.list-emoji')
-    //     listEmoji.classList.add('hide')
+    var sendingBtn = document.querySelector('.sending-btn')
+    sendingBtn.onclick = function () {
+        var listEmoji = document.querySelector('.list-emoji')
+        listEmoji.classList.add('hide')
 
-    //     if (message.value) {
-    //         db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-    //             .onSnapshot((doc) => {
-    //                 var messageData = doc.data()
-    //                 var object = {
-    //                     senderName: sender.displayName,
-    //                     message: message.value,
-    //                     senderImgURL: sender.photoURL,
-    //                     date: Date()
-    //                 }
+        if (message.value) {
+            db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+                .onSnapshot((doc) => {
+                    var messageData = doc.data()
+                    var object = {
+                        senderName: sender.displayName,
+                        message: message.value,
+                        senderImgURL: sender.photoURL,
+                        date: Date()
+                    }
 
-    //                 if (messageData) {
-    //                     // send to user doc
-    //                     db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-    //                         .update({
-    //                             message: firebase.firestore.FieldValue.arrayUnion(object)
-    //                         })
-    //                         .then(() => {
-    //                             message.value = ""
-    //                         })
+                    if (messageData) {
+                        // send to user doc
+                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+                            .update({
+                                message: firebase.firestore.FieldValue.arrayUnion(object)
+                            })
+                            .then(() => {
+                                message.value = ""
+                            })
 
-    //                     //send to your doc
-    //                     db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
-    //                         .update({
-    //                             message: firebase.firestore.FieldValue.arrayUnion(object)
-    //                         })
-    //                         .then(() => {
-    //                             message.value = ""
-    //                         })
-    //                 }
+                        //send to your doc
+                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
+                            .update({
+                                message: firebase.firestore.FieldValue.arrayUnion(object)
+                            })
+                            .then(() => {
+                                message.value = ""
+                            })
+                    }
 
-    //                 else {
-    //                     // send to user doc
-    //                     db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
-    //                         message: []
-    //                     })
+                    else {
+                        // send to user doc
+                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
+                            message: []
+                        })
 
-    //                     //send to your doc
-    //                     db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
-    //                         message: []
-    //                     })
-    //                 }
-    //             });
+                        //send to your doc
+                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
+                            message: []
+                        })
+                    }
+                });
 
-    //     }
-    //     else {
-    //         console.log("Enter your message");
-    //     }
-    // }
+        }
+        else {
+            console.log("Enter your message");
+        }
+    }
     renderMessage(receiverUid, sender, boxUser)
     sendEmoji()
 }
@@ -246,78 +241,82 @@ function sendEmoji() {
     }
 }
 
-function sendImage(receiverUid, sender) {
-    document.querySelector('.image-icon').onclick = function () {
-        var input = document.createElement('input')
-        input.type = "file"
-        input.onchange = e => {
-            files = e.target.files
-            var reader = new FileReader()
+// function sendImage(receiverUid, sender) {
+//     document.querySelector('.image-icon').onclick = function () {
+//         var input = document.createElement('input')
+//         input.type = "file"
+//         input.onchange = e => {
+//             files = e.target.files
+//             var reader = new FileReader()
 
-            reader.onload = function () {
-                document.querySelector('.sending_img-container').classList.remove("hide")
-                var imgURL = reader.result
-                var img = document.getElementById('myImg')
-                img.src = imgURL
+//             reader.onload = function () {
+//                 document.querySelector('.sending_img-container').classList.remove("hide")
+//                 var imgURL = reader.result
+//                 var img = document.getElementById('myImg')
+//                 img.src = imgURL
 
-                handleSendingImage(img, receiverUid, sender)
-            }
-            reader.readAsDataURL(files[0])
-        }
-        input.click()
-    }
-}
+//                 handleSendingImage(img, receiverUid, sender)
+//             }
+//             reader.readAsDataURL(files[0])
+//         }
+//         input.click()
+//     }
+// }
 
-function handleSendingImage(img, receiverUid, sender) {
-    var sendingBtn = document.querySelector('.sending-btn')
-    sendingBtn.onclick = function () {
-        if (img) {
-            db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-                .onSnapshot((doc) => {
-                    var messageData = doc.data()
+// function handleSendingImage(img, receiverUid, sender) {
+//     var sendingBtn = document.querySelector('.sending-btn')
+//     if (img.src) {
+//         sendingBtn.onclick = function () {
+//             if (img) {
+//                 // document.querySelector('.sending_img-container').classList.add("hide")
+//                 db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+//                     .onSnapshot((doc) => {
+//                         var messageData = doc.data()
 
-                    var object = {
-                        senderName: sender.displayName,
-                        imgURL: img.src,
-                        senderImgURL: sender.photoURL,
-                        date: Date()
-                    }
+//                         var object = {
+//                             senderName: sender.displayName,
+//                             imgURL: img.src,
+//                             senderImgURL: sender.photoURL,
+//                             date: Date()
+//                         }
 
-                    if (messageData) {
-                        // send to user doc
-                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-                            .update({
-                                message: firebase.firestore.FieldValue.arrayUnion(object)
-                            })
-                            .then(() => {
-                                message.value = ""
-                            })
+//                         if (messageData) {
+//                             // send to user doc
+//                             db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+//                                 .update({
+//                                     message: firebase.firestore.FieldValue.arrayUnion(object)
+//                                 })
+//                                 .then(() => {
+//                                     // img.src = ""
 
-                        //send to your doc
-                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
-                            .update({
-                                message: firebase.firestore.FieldValue.arrayUnion(object)
-                            })
-                            .then(() => {
-                                message.value = ""
-                            })
-                    }
+//                                 })
 
-                    else {
-                        // send to user doc
-                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
-                            message: []
-                        })
+//                             //send to your doc
+//                             db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
+//                                 .update({
+//                                     message: firebase.firestore.FieldValue.arrayUnion(object)
+//                                 })
+//                                 .then(() => {
+//                                     // img.src = ""
+//                                 })
+//                         }
 
-                        //send to your doc
-                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
-                            message: []
-                        })
-                    }
-                })
-        }
-    }
-}
+//                         else {
+//                             // send to user doc
+//                             db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
+//                                 message: []
+//                             })
+
+//                             //send to your doc
+//                             db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
+//                                 message: []
+//                             })
+//                         }
+//                     })
+//             }
+//         }
+//     }
+// }
 
 function renderMessage(receiverUid, sender) {
     db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
