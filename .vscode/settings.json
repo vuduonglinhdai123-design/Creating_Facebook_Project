@@ -1,8 +1,8 @@
 {
   "liveServer.settings.https": {
     "enable": true,
-    "cert": "F:\\Projects\\JS\\Product\\Facebook\\localhost.pem",
-    "key": "F:\\Projects\\JS\\Product\\Facebook\\localhost.key",
+    "cert": "C://Users//huan//Desktop//Tu Linh//Creating_Facebook_Project//localhost.pem",
+    "key": "C://Users//huan//Desktop//Tu Linh//Creating_Facebook_Project//localhost.key",
     "passphrase": "123456"
   }
 }
