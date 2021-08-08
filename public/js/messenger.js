@@ -62,7 +62,7 @@ function renderBoxChat_main(user) {
         boxesUser[i].onclick = function () {
             db.collection("message").doc(`${this.id}`).collection('message').doc(`${user.uid}`)
                 .onSnapshot((doc) => {
-                    if(doc.data() === undefined) {
+                    if (doc.data() === undefined) {
                         var bodyChatBox = document.querySelector('.body-chatBox')
                         bodyChatBox.innerHTML = ""
                     }
@@ -85,16 +85,19 @@ function renderBoxChat_main(user) {
 function renderBoxUserMessage(boxUser) {
     db.collection("message").doc(`${boxUser.id}`).collection('message').doc(`${user.uid}`)
         .onSnapshot((doc) => {
-            var messageArray = doc.data().message
-            messageArray.map(function (objMessage) {
-                if (objMessage.senderName === user.displayName) {
-                    boxUser.querySelector('.userMessage').innerHTML = 'You:' + ' ' + objMessage.message
-                }
-                else {
-                    boxUser.querySelector('.userMessage').innerHTML = objMessage.message
+            if (doc.data()) {
+                var messageArray = doc.data().message
+                messageArray.map(function (objMessage) {
+                    if (objMessage.senderName === user.displayName) {
+                        boxUser.querySelector('.userMessage').innerHTML = 'You:' + ' ' + objMessage.message
+                    }
+                    else {
+                        boxUser.querySelector('.userMessage').innerHTML = objMessage.message
 
-                }
-            })
+                    }
+                })
+            }
+
         })
 }
 
@@ -119,8 +122,8 @@ function sendMessage(receiverUid, sender, boxUser) {
     sendingBtn.onclick = function () {
         var listEmoji = document.querySelector('.list-emoji')
         listEmoji.classList.add('hide')
-
         if (message.value != "") {
+            console.log(message.value);
             db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
                 .onSnapshot((doc) => {
                     var messageData = doc.data()
@@ -251,35 +254,37 @@ function sendEmoji() {
 function renderMessage(receiverUid, sender) {
     db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
         .onSnapshot((doc) => {
-            var arrayMessage = doc.data().message
-            var bodyChatBox = document.querySelector('.body-chatBox')
-            bodyChatBox.innerHTML = ""
-            arrayMessage.map(function (objMessage) {
-                if (objMessage.senderName === sender.displayName && objMessage.message !== "") {
-                    var html = `
-                        <div class="senderBox-right">
-                            <div class="sender-message" style=" background-color: #df205c;">${objMessage.message}</div> 
-                            <div class="sender-avatar">
-                                <img src="${objMessage.senderImgURL}" alt="">
+            if (doc.data()) {
+                var arrayMessage = doc.data().message
+                var bodyChatBox = document.querySelector('.body-chatBox')
+                bodyChatBox.innerHTML = ""
+                arrayMessage.map(function (objMessage) {
+                    if (objMessage.senderName === sender.displayName && objMessage.message != "") {
+                        var html = `
+                            <div class="senderBox-right">
+                                <div class="sender-message" style=" background-color: #df205c;">${objMessage.message}</div> 
+                                <div class="sender-avatar">
+                                    <img src="${objMessage.senderImgURL}" alt="">
+                                </div>
                             </div>
-                        </div>
-                        `
-                    bodyChatBox.innerHTML += html
-                    bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
-                }
-                else {
-                    var html = `
-                        <div class="senderBox-left">
-                            <div class="sender-avatar">
-                                <img src="${objMessage.senderImgURL}" alt="">
+                            `
+                        bodyChatBox.innerHTML += html
+                        bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
+                    }
+                    else if(objMessage.senderName != sender.displayName && objMessage.message != "") {
+                        var html = `
+                            <div class="senderBox-left">
+                                <div class="sender-avatar">
+                                    <img src="${objMessage.senderImgURL}" alt="">
+                                </div>
+                                <div class="sender-message" style=" background-color: #3e4042;">${objMessage.message}</div>
                             </div>
-                            <div class="sender-message" style=" background-color: #3e4042;">${objMessage.message}</div>
-                        </div>
-                        `
-                    bodyChatBox.innerHTML += html
-                    bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
-                }
-            })
+                            `
+                        bodyChatBox.innerHTML += html
+                        bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
+                    }
+                })
+            }
         });
 }
 
