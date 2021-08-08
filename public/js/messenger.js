@@ -330,7 +330,6 @@ function renderMessage(receiverUid, sender) {
                     if (objMessage.message) {
                         var html = `
                         <div class="senderBox-right">
-                            <button class="delete-btn" name="${objMessage.senderName}" id="${objMessage.date}" onclick="deleting(${receiverUid}, this)">Delete</button>
                             <div class="sender-message" style=" background-color: #df205c;">${objMessage.message}</div> 
                             <div class="sender-avatar">
                                 <img src="${objMessage.senderImgURL}" alt="">
