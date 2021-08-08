@@ -60,6 +60,14 @@ function renderBoxChat_main(user) {
     var boxesUser = document.querySelectorAll('.boxUser')
     for (var i = 0; i < boxesUser.length; i++) {
         boxesUser[i].onclick = function () {
+            db.collection("message").doc(`${this.id}`).collection('message').doc(`${user.uid}`)
+                .onSnapshot((doc) => {
+                    if(doc.data() === undefined) {
+                        var bodyChatBox = document.querySelector('.body-chatBox')
+                        bodyChatBox.innerHTML = ""
+                    }
+                })
+
             db.collection("users").doc(`${this.id}`)
                 .onSnapshot((doc) => {
                     var userData = doc.data()
@@ -67,7 +75,6 @@ function renderBoxChat_main(user) {
                     renderBoxChat_heading(userData)
                     sendMessage(this.id, user, this)
                     sendMessageByEnter(this.id, user)
-                    // sendImage(this.id, user)
                 });
         }
 
@@ -79,7 +86,6 @@ function renderBoxUserMessage(boxUser) {
     db.collection("message").doc(`${boxUser.id}`).collection('message').doc(`${user.uid}`)
         .onSnapshot((doc) => {
             var messageArray = doc.data().message
-
             messageArray.map(function (objMessage) {
                 if (objMessage.senderName === user.displayName) {
                     boxUser.querySelector('.userMessage').innerHTML = 'You:' + ' ' + objMessage.message
@@ -114,7 +120,7 @@ function sendMessage(receiverUid, sender, boxUser) {
         var listEmoji = document.querySelector('.list-emoji')
         listEmoji.classList.add('hide')
 
-        if (message.value) {
+        if (message.value != "") {
             db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
                 .onSnapshot((doc) => {
                     var messageData = doc.data()
@@ -164,12 +170,13 @@ function sendMessage(receiverUid, sender, boxUser) {
         }
     }
     renderMessage(receiverUid, sender, boxUser)
+    // render2(receiverUid, sender, boxUser)
     sendEmoji()
 }
 
 function sendMessageByEnter(receiverUid, sender) {
     document.querySelector('body').onkeypress = function (e) {
-        if (e.which === 13 && message.value) {
+        if (e.which === 13 && message.value != "") {
             var listEmoji = document.querySelector('.list-emoji')
             listEmoji.classList.add('hide')
 
@@ -241,94 +248,15 @@ function sendEmoji() {
     }
 }
 
-// function sendImage(receiverUid, sender) {
-//     document.querySelector('.image-icon').onclick = function () {
-//         var input = document.createElement('input')
-//         input.type = "file"
-//         input.onchange = e => {
-//             files = e.target.files
-//             var reader = new FileReader()
-
-//             reader.onload = function () {
-//                 document.querySelector('.sending_img-container').classList.remove("hide")
-//                 var imgURL = reader.result
-//                 var img = document.getElementById('myImg')
-//                 img.src = imgURL
-
-//                 handleSendingImage(img, receiverUid, sender)
-//             }
-//             reader.readAsDataURL(files[0])
-//         }
-//         input.click()
-//     }
-// }
-
-// function handleSendingImage(img, receiverUid, sender) {
-//     var sendingBtn = document.querySelector('.sending-btn')
-//     if (img.src) {
-//         sendingBtn.onclick = function () {
-//             if (img) {
-//                 // document.querySelector('.sending_img-container').classList.add("hide")
-//                 db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-//                     .onSnapshot((doc) => {
-//                         var messageData = doc.data()
-
-//                         var object = {
-//                             senderName: sender.displayName,
-//                             imgURL: img.src,
-//                             senderImgURL: sender.photoURL,
-//                             date: Date()
-//                         }
-
-//                         if (messageData) {
-//                             // send to user doc
-//                             db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-//                                 .update({
-//                                     message: firebase.firestore.FieldValue.arrayUnion(object)
-//                                 })
-//                                 .then(() => {
-//                                     // img.src = ""
-
-//                                 })
-
-//                             //send to your doc
-//                             db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
-//                                 .update({
-//                                     message: firebase.firestore.FieldValue.arrayUnion(object)
-//                                 })
-//                                 .then(() => {
-//                                     // img.src = ""
-//                                 })
-//                         }
-
-//                         else {
-//                             // send to user doc
-//                             db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
-//                                 message: []
-//                             })
-
-//                             //send to your doc
-//                             db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
-//                                 message: []
-//                             })
-//                         }
-//                     })
-//             }
-//         }
-//     }
-// }
-
 function renderMessage(receiverUid, sender) {
     db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
         .onSnapshot((doc) => {
             var arrayMessage = doc.data().message
             var bodyChatBox = document.querySelector('.body-chatBox')
             bodyChatBox.innerHTML = ""
-
             arrayMessage.map(function (objMessage) {
-                if (objMessage.senderName === sender.displayName) {
-                    if (objMessage.message) {
-                        var html = `
+                if (objMessage.senderName === sender.displayName && objMessage.message !== "") {
+                    var html = `
                         <div class="senderBox-right">
                             <div class="sender-message" style=" background-color: #df205c;">${objMessage.message}</div> 
                             <div class="sender-avatar">
@@ -336,27 +264,11 @@ function renderMessage(receiverUid, sender) {
                             </div>
                         </div>
                         `
-                        bodyChatBox.innerHTML += html
-                        bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
-                    }
-                    else if (objMessage.imgURL) {
-                        var html = `
-                        <div class="senderBox-right">
-                            <div class="sender-img">
-                                <img src="${objMessage.imgURL}" alt="">
-                            </div>
-                            <div class="sender-avatar">
-                                <img src="${objMessage.senderImgURL}" alt="">
-                            </div>
-                        </div>
-                        `
-                        bodyChatBox.innerHTML += html
-                        bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
-                    }
+                    bodyChatBox.innerHTML += html
+                    bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
                 }
                 else {
-                    if (objMessage.message) {
-                        var html = `
+                    var html = `
                         <div class="senderBox-left">
                             <div class="sender-avatar">
                                 <img src="${objMessage.senderImgURL}" alt="">
@@ -364,72 +276,48 @@ function renderMessage(receiverUid, sender) {
                             <div class="sender-message" style=" background-color: #3e4042;">${objMessage.message}</div>
                         </div>
                         `
-                        bodyChatBox.innerHTML += html
-                        bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
-                    }
-                    else if (objMessage.imgURL) {
-                        var html = `
-                        <div class="senderBox-left">
-                            <div class="sender-avatar">
-                                <img src="${objMessage.senderImgURL}" alt="">
-                            </div>
-                            <div class="sender-img">
-                                <img src="${objMessage.imgURL}" alt="">
-                            </div>
-                        </div>
-                        `
-                        bodyChatBox.innerHTML += html
-                        bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
-                    }
+                    bodyChatBox.innerHTML += html
+                    bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
                 }
             })
         });
 }
 
+// function render2(receiverUid, sender) {
+//     db.collection("message")
+//         .onSnapshot(function (snapshot) {
+//             console.log(snapshot.data());
+//             snapshot.docChanges().forEach(function (change) {
+//                 var data = change.doc.data();
+//                 // if new message added
+//                 if (change.type == "added") {
+//                     console.log(data);
+//                 }
+//             })
 
-// function deleting(receiverUid, btn) {
-//     var messageElement = btn.parentElement
-
-//     console.log(messageElement);
-//     var object = {
-//         senderName: btn.name,
-//         message: messageElement.querySelector('.sender-message').innerHTML,
-//         senderImgURL: messageElement.querySelector('img').src,
-//         date: btn.id,
-//     }
-
-//     db.collection('message').doc(`${receiverUid.id}`)
-//         .update({
-//             message: firebase.firestore.FieldValue.arrayRemove(object)
 //         })
 
-// db.collection("message").doc(`${receiverUid.id}`)
-//     .onSnapshot((doc) => {
-//         var messageArray = doc.data().message
-// messageArray.find(function (messageObj) {
-//     if (messageObj.senderName == object.senderName && messageObj.message == object.message && messageObj.senderImgURL == object.senderImgURL && messageObj.date == object.date) {
-//         db.collection('message').doc(`${receiverUid.id}`)
-//             .update({
-//                 message: firebase.firestore.FieldValue.arrayRemove(messageObj)
-//             })
-//             .then(() => {
-//                 // messageElement.remove()
-//             })
-//     }
-//     messageElement.remove()
-// })
-// });
+// db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+//     .onSnapshot((snapshot) => {
+//         snapshot.docChanges().forEach((change) => {
+//             if (change.type === "added") {
+//                 console.log("New city: ", change.doc.data());
+//             }
 
-
+//         });
+//     });
 // }
 
-// db.collection('message').doc(`G80tzvFYmPT4XXlOQHxZWc8Y3b12`)
-//     .update({
-//         message: firebase.firestore.FieldValue.arrayRemove({
-//             senderName: "Đài Vũ Dương Linh",
-//             message: "1",
-//             senderImgURL: "https://graph.facebook.com/1148426118994623/picture",
-//             date: "Fri Jul 23 2021 23:51:15 GMT+0700 (Giờ Đông Dương)"
-//         })
-//     })
+// db.collection("message").doc(`G80tzvFYmPT4XXlOQHxZWc8Y3b12`).collection('message').doc(`mUyxTolB77cmi7ItkCEUULw8hOl2`)
+// db.collection("message").orderBy("date")
+//     .onSnapshot(function (snapshot) {
 
+//         snapshot.docChanges().forEach(function (change) {
+//             var data = change.doc.data();
+//             // if new message added
+//             if (change.type == "added") {
+//                 console.log(data);
+//             }
+//         })
+
+//     })
