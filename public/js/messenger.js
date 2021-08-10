@@ -48,7 +48,7 @@ function renderBoxUser() {
     db.collection("users").onSnapshot(function (snapshot) {
         snapshot.docChanges().forEach(function (change) {
             var data = change.doc.data()
-            if (change.type == "added" && data.docUserID !== user.uid) {
+            if (change.type == "added" && data.docUserID != user.uid) {
                 createBoxUser(data)
             }
         })
@@ -93,7 +93,6 @@ function renderBoxUserMessage(boxUser) {
                     }
                     else {
                         boxUser.querySelector('.userMessage').innerHTML = objMessage.message
-
                     }
                 })
             }
@@ -122,10 +121,10 @@ function sendMessage(receiverUid, sender, boxUser) {
     sendingBtn.onclick = function () {
         var listEmoji = document.querySelector('.list-emoji')
         listEmoji.classList.add('hide')
-        if (message.value != "") {
-            console.log(message.value);
-            db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-                .onSnapshot((doc) => {
+
+        db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+            .onSnapshot((doc) => {
+                if (message.value) {
                     var messageData = doc.data()
                     var object = {
                         senderName: sender.displayName,
@@ -133,24 +132,19 @@ function sendMessage(receiverUid, sender, boxUser) {
                         senderImgURL: sender.photoURL,
                         date: Date()
                     }
-
+                    console.log(object);
                     if (messageData) {
                         // send to user doc
                         db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
                             .update({
                                 message: firebase.firestore.FieldValue.arrayUnion(object)
                             })
-                            .then(() => {
-                                message.value = ""
-                            })
+                        document.querySelector('.input-container').reset()
 
                         //send to your doc
                         db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
                             .update({
                                 message: firebase.firestore.FieldValue.arrayUnion(object)
-                            })
-                            .then(() => {
-                                message.value = ""
                             })
                     }
 
@@ -165,21 +159,20 @@ function sendMessage(receiverUid, sender, boxUser) {
                             message: []
                         })
                     }
-                });
+                }
 
-        }
-        else {
-            console.log("Enter your message");
-        }
+            });
     }
     renderMessage(receiverUid, sender, boxUser)
     // render2(receiverUid, sender, boxUser)
     sendEmoji()
 }
 
+
 function sendMessageByEnter(receiverUid, sender) {
     document.querySelector('body').onkeypress = function (e) {
         if (e.which === 13 && message.value != "") {
+            e.preventDefault();
             var listEmoji = document.querySelector('.list-emoji')
             listEmoji.classList.add('hide')
 
@@ -199,17 +192,15 @@ function sendMessageByEnter(receiverUid, sender) {
                             .update({
                                 message: firebase.firestore.FieldValue.arrayUnion(object)
                             })
-                            .then(() => {
-                                message.value = ""
-                            })
+                        // .then(() => {
+                        //     message.value = ""
+                        // })
+                        document.querySelector('.input-container').reset()
 
                         //send to your doc
                         db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
                             .update({
                                 message: firebase.firestore.FieldValue.arrayUnion(object)
-                            })
-                            .then(() => {
-                                message.value = ""
                             })
                     }
 
@@ -245,7 +236,7 @@ function sendEmoji() {
             listEmoji.classList.toggle('hide')
         }
 
-        else if (e.target !== listEmoji && e.target.parentElement !== listEmoji) {
+        else if (e.target != listEmoji && e.target.parentElement != listEmoji) {
             listEmoji.classList.add('hide')
         }
     }
@@ -271,7 +262,7 @@ function renderMessage(receiverUid, sender) {
                         bodyChatBox.innerHTML += html
                         bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
                     }
-                    else if(objMessage.senderName != sender.displayName && objMessage.message != "") {
+                    else if (objMessage.senderName != sender.displayName && objMessage.message != "") {
                         var html = `
                             <div class="senderBox-left">
                                 <div class="sender-avatar">
