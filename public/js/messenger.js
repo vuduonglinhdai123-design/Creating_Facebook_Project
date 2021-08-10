@@ -122,52 +122,56 @@ function sendMessage(receiverUid, sender, boxUser) {
         var listEmoji = document.querySelector('.list-emoji')
         listEmoji.classList.add('hide')
 
-        db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-            .onSnapshot((doc) => {
-                if (message.value) {
-                    var messageData = doc.data()
-                    var object = {
-                        senderName: sender.displayName,
-                        message: message.value,
-                        senderImgURL: sender.photoURL,
-                        date: Date()
-                    }
-                    console.log(object);
-                    if (messageData) {
-                        // send to user doc
-                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-                            .update({
-                                message: firebase.firestore.FieldValue.arrayUnion(object)
-                            })
-                        document.querySelector('.input-container').reset()
+        handleSendingMessage(receiverUid, sender)
 
-                        //send to your doc
-                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
-                            .update({
-                                message: firebase.firestore.FieldValue.arrayUnion(object)
-                            })
-                    }
-
-                    else {
-                        // send to user doc
-                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
-                            message: []
-                        })
-
-                        //send to your doc
-                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
-                            message: []
-                        })
-                    }
-                }
-
-            });
     }
     renderMessage(receiverUid, sender, boxUser)
     // render2(receiverUid, sender, boxUser)
     sendEmoji()
 }
 
+function handleSendingMessage(receiverUid, sender) {
+    db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+        .onSnapshot((doc) => {
+            if (message.value) {
+                var messageData = doc.data()
+                var object = {
+                    senderName: sender.displayName,
+                    message: message.value,
+                    senderImgURL: sender.photoURL,
+                    date: Date()
+                }
+                console.log(object);
+                if (messageData) {
+                    // send to user doc
+                    db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+                        .update({
+                            message: firebase.firestore.FieldValue.arrayUnion(object)
+                        })
+                    document.querySelector('.input-container').reset()
+
+                    //send to your doc
+                    db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
+                        .update({
+                            message: firebase.firestore.FieldValue.arrayUnion(object)
+                        })
+                }
+
+                else {
+                    // send to user doc
+                    db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
+                        message: []
+                    })
+
+                    //send to your doc
+                    db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
+                        message: []
+                    })
+                }
+            }
+
+        });
+}
 
 function sendMessageByEnter(receiverUid, sender) {
     document.querySelector('body').onkeypress = function (e) {
