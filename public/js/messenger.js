@@ -1,6 +1,5 @@
 var user = JSON.parse(localStorage.getItem('userData'))
 var db = firebase.firestore()
-var files = []
 var boxUser_Container = document.querySelector('.boxUsers-container')
 var user = JSON.parse(localStorage.getItem('userData'))
 var message = document.querySelector('.message')
@@ -73,8 +72,11 @@ function renderBoxChat_main(user) {
                     var userData = doc.data()
 
                     renderBoxChat_heading(userData)
+                    createEmptyArray(this.id, user)
                     sendMessage(this.id, user, this)
                     sendMessageByEnter(this.id, user)
+                    renderMessage(this.id, user, this)
+
                 });
         }
 
@@ -100,7 +102,6 @@ function renderBoxUserMessage(boxUser) {
         })
 }
 
-
 function renderBoxChat_heading(userData) {
     var headingChatBox = document.querySelector('.heading-chatBox')
     var htmls = `
@@ -116,61 +117,16 @@ function renderBoxChat_heading(userData) {
 
 // SENDING MESSAGE
 
-function sendMessage(receiverUid, sender, boxUser) {
+function sendMessage(receiverUid, sender) {
     var sendingBtn = document.querySelector('.sending-btn')
     sendingBtn.onclick = function () {
         var listEmoji = document.querySelector('.list-emoji')
         listEmoji.classList.add('hide')
-
-        handleSendingMessage(receiverUid, sender)
-
+        if (message.value.trim() != "") {
+            handleSendingMessage(receiverUid, sender)
+        }
     }
-    renderMessage(receiverUid, sender, boxUser)
-    // render2(receiverUid, sender, boxUser)
     sendEmoji()
-}
-
-function handleSendingMessage(receiverUid, sender) {
-    db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-        .onSnapshot((doc) => {
-            if (message.value) {
-                var messageData = doc.data()
-                var object = {
-                    senderName: sender.displayName,
-                    message: message.value,
-                    senderImgURL: sender.photoURL,
-                    date: Date()
-                }
-                console.log(object);
-                if (messageData) {
-                    // send to user doc
-                    db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-                        .update({
-                            message: firebase.firestore.FieldValue.arrayUnion(object)
-                        })
-                    document.querySelector('.input-container').reset()
-
-                    //send to your doc
-                    db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
-                        .update({
-                            message: firebase.firestore.FieldValue.arrayUnion(object)
-                        })
-                }
-
-                else {
-                    // send to user doc
-                    db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
-                        message: []
-                    })
-
-                    //send to your doc
-                    db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
-                        message: []
-                    })
-                }
-            }
-
-        });
 }
 
 function sendMessageByEnter(receiverUid, sender) {
@@ -180,48 +136,52 @@ function sendMessageByEnter(receiverUid, sender) {
             var listEmoji = document.querySelector('.list-emoji')
             listEmoji.classList.add('hide')
 
-            db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-                .onSnapshot((doc) => {
-                    var messageData = doc.data()
-                    var object = {
-                        senderName: sender.displayName,
-                        message: message.value,
-                        senderImgURL: sender.photoURL,
-                        date: Date()
-                    }
-
-                    if (messageData) {
-                        // send to user doc
-                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-                            .update({
-                                message: firebase.firestore.FieldValue.arrayUnion(object)
-                            })
-                        // .then(() => {
-                        //     message.value = ""
-                        // })
-                        document.querySelector('.input-container').reset()
-
-                        //send to your doc
-                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
-                            .update({
-                                message: firebase.firestore.FieldValue.arrayUnion(object)
-                            })
-                    }
-
-                    else {
-                        // send to user doc
-                        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
-                            message: []
-                        })
-
-                        //send to your doc
-                        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
-                            message: []
-                        })
-                    }
-                });
+            if (message.value.trim() != "") {
+                handleSendingMessage(receiverUid, sender)
+            }
         }
     }
+}
+
+function createEmptyArray(receiverUid, sender) {
+    // if no messageData => create empty array to save msg
+    db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+        .onSnapshot((doc) => {
+            var messageData = doc.data()
+            if (!messageData) {
+                // send to user doc
+                db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`).set({
+                    message: []
+                })
+
+                //send to your doc
+                db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`).set({
+                    message: []
+                })
+            }
+
+        });
+}
+
+function handleSendingMessage(receiverUid, sender) {
+    var object = {
+        senderName: sender.displayName,
+        message: message.value,
+        senderImgURL: sender.photoURL,
+        date: Date()
+    }
+
+    db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+        .update({
+            message: firebase.firestore.FieldValue.arrayUnion(object)
+        })
+
+    //send to your doc
+    db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
+        .update({
+            message: firebase.firestore.FieldValue.arrayUnion(object)
+        })
+    document.querySelector('.input-container').reset()
 }
 
 function sendEmoji() {
@@ -283,41 +243,3 @@ function renderMessage(receiverUid, sender) {
         });
 }
 
-// function render2(receiverUid, sender) {
-//     db.collection("message")
-//         .onSnapshot(function (snapshot) {
-//             console.log(snapshot.data());
-//             snapshot.docChanges().forEach(function (change) {
-//                 var data = change.doc.data();
-//                 // if new message added
-//                 if (change.type == "added") {
-//                     console.log(data);
-//                 }
-//             })
-
-//         })
-
-// db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-//     .onSnapshot((snapshot) => {
-//         snapshot.docChanges().forEach((change) => {
-//             if (change.type === "added") {
-//                 console.log("New city: ", change.doc.data());
-//             }
-
-//         });
-//     });
-// }
-
-// db.collection("message").doc(`G80tzvFYmPT4XXlOQHxZWc8Y3b12`).collection('message').doc(`mUyxTolB77cmi7ItkCEUULw8hOl2`)
-// db.collection("message").orderBy("date")
-//     .onSnapshot(function (snapshot) {
-
-//         snapshot.docChanges().forEach(function (change) {
-//             var data = change.doc.data();
-//             // if new message added
-//             if (change.type == "added") {
-//                 console.log(data);
-//             }
-//         })
-
-//     })
