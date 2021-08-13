@@ -1,9 +1,9 @@
 var user = JSON.parse(localStorage.getItem('userData'))
 var db = firebase.firestore()
 var boxUser_Container = document.querySelector('.boxUsers-container')
-var user = JSON.parse(localStorage.getItem('userData'))
 var message = document.querySelector('.message')
-
+var ImgName, ImgUrl;
+var files = []
 
 window.onload = start()
 
@@ -15,13 +15,20 @@ function resolveAfter1Seconds() {
     });
 }
 
+function resolveAfterSomeSeconds() {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve('resolved');
+        }, 1000);
+    });
+}
+
 
 function start() {
     async function asyncCall() {
         renderBoxUser()
         await resolveAfter1Seconds();
         renderBoxChat_main(user)
-
     }
     asyncCall();
 }
@@ -76,11 +83,13 @@ function renderBoxChat_main(user) {
                     sendMessage(this.id, user, this)
                     sendMessageByEnter(this.id, user)
                     renderMessage(this.id, user, this)
-
+                    sendImage(this.id, user)
                 });
         }
 
         renderBoxUserMessage(boxesUser[i], user)
+
+
     }
 }
 
@@ -91,10 +100,21 @@ function renderBoxUserMessage(boxUser) {
                 var messageArray = doc.data().message
                 messageArray.map(function (objMessage) {
                     if (objMessage.senderName === user.displayName) {
-                        boxUser.querySelector('.userMessage').innerHTML = 'You:' + ' ' + objMessage.message
+                        if (objMessage.message) {
+                            boxUser.querySelector('.userMessage').innerHTML = 'You:' + ' ' + objMessage.message
+                        }
+                        else if (objMessage.image) {
+                            boxUser.querySelector('.userMessage').innerHTML = 'You send an image'
+                        }
                     }
+
                     else {
-                        boxUser.querySelector('.userMessage').innerHTML = objMessage.message
+                        if (objMessage.message) {
+                            boxUser.querySelector('.userMessage').innerHTML = objMessage.message
+                        }
+                        else if (objMessage.image) {
+                            boxUser.querySelector('.userMessage').innerHTML = `${objMessage.senderName} send an image`
+                        }
                     }
                 })
             }
@@ -122,6 +142,7 @@ function sendMessage(receiverUid, sender) {
     sendingBtn.onclick = function () {
         var listEmoji = document.querySelector('.list-emoji')
         listEmoji.classList.add('hide')
+
         if (message.value.trim() != "") {
             handleSendingMessage(receiverUid, sender)
         }
@@ -168,7 +189,7 @@ function handleSendingMessage(receiverUid, sender) {
         senderName: sender.displayName,
         message: message.value,
         senderImgURL: sender.photoURL,
-        date: Date()
+        senderDate: moment().format('llll'),
     }
 
     db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
@@ -182,6 +203,54 @@ function handleSendingMessage(receiverUid, sender) {
             message: firebase.firestore.FieldValue.arrayUnion(object)
         })
     document.querySelector('.input-container').reset()
+}
+
+function sendImage(receiverUid, sender) {
+    document.querySelector('.image-icon').onclick = function () {
+        var input = document.createElement('input')
+        input.type = "file"
+        input.onchange = e => {
+            files = e.target.files
+            var reader = new FileReader()
+
+            reader.onload = function () {
+                document.querySelector('.sending_img-container').classList.remove("hide")
+                var imgURL = reader.result
+                var img = document.getElementById('myImg')
+                img.src = imgURL
+
+                // show sending img container when select img
+                document.querySelector('.sending_img-container').style.display = "block"
+                handleSendingImage(img, receiverUid, sender)
+            }
+            reader.readAsDataURL(files[0])
+        }
+        input.click()
+    }
+}
+
+function handleSendingImage(img, receiverUid, sender) {
+    document.querySelector('.sendImg-btn').onclick = function () {
+        document.querySelector('.sending_img-container').style.display = "none"
+
+        var object = {
+            senderName: sender.displayName,
+            image: img.src,
+            senderImgURL: sender.photoURL,
+            senderDate: moment().format('llll'),
+        }
+
+        db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+            .update({
+                message: firebase.firestore.FieldValue.arrayUnion(object)
+            })
+
+        //send to your doc
+        db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
+            .update({
+                message: firebase.firestore.FieldValue.arrayUnion(object)
+            })
+    }
 }
 
 function sendEmoji() {
@@ -206,40 +275,130 @@ function sendEmoji() {
     }
 }
 
+// RENDER MESSAGE
 function renderMessage(receiverUid, sender) {
     db.collection("message").doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
         .onSnapshot((doc) => {
             if (doc.data()) {
                 var arrayMessage = doc.data().message
                 var bodyChatBox = document.querySelector('.body-chatBox')
+
                 bodyChatBox.innerHTML = ""
                 arrayMessage.map(function (objMessage) {
-                    if (objMessage.senderName === sender.displayName && objMessage.message != "") {
-                        var html = `
+                    if (objMessage.senderName === sender.displayName) {
+                        if (objMessage.message) {
+                            var html = `
                             <div class="senderBox-right">
-                                <div class="sender-message" style=" background-color: #df205c;">${objMessage.message}</div> 
+                                <div class="sender-date">${objMessage.senderDate}</div>
+                                <i class="fas fa-trash delete-btn"></i>
+                                <div class="sender-message" style="background-color: #df205c;">${objMessage.message}</div> 
                                 <div class="sender-avatar">
                                     <img src="${objMessage.senderImgURL}" alt="">
                                 </div>
                             </div>
                             `
-                        bodyChatBox.innerHTML += html
-                        bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
+                            bodyChatBox.innerHTML += html
+                            bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
+                        }
+
+                        else if (objMessage.image) {
+                            var html = `
+                            <div class="senderBox-right">
+                                <div class="sender-date ">${objMessage.senderDate}</div>
+                                <div class="sender-img">
+                                    <img src="${objMessage.image}" alt="">
+                                </div>
+                                <div class="sender-avatar">
+                                    <img src="${objMessage.senderImgURL}" alt="">
+                                </div>
+                            </div>
+                            `
+                            bodyChatBox.innerHTML += html
+                            bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
+                        }
                     }
-                    else if (objMessage.senderName != sender.displayName && objMessage.message != "") {
-                        var html = `
+
+                    else if (objMessage.senderName != sender.displayName) {
+                        if (objMessage.message) {
+                            var html = `
                             <div class="senderBox-left">
                                 <div class="sender-avatar">
                                     <img src="${objMessage.senderImgURL}" alt="">
                                 </div>
                                 <div class="sender-message" style=" background-color: #3e4042;">${objMessage.message}</div>
+                                <div class="sender-date">${objMessage.senderDate}</div>
                             </div>
                             `
-                        bodyChatBox.innerHTML += html
-                        bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
+                            bodyChatBox.innerHTML += html
+                            bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
+                        }
+
+                        else if (objMessage.image) {
+                            var html = `
+                            <div class="senderBox-left">
+                                <div class="sender-avatar">
+                                    <img src="${objMessage.senderImgURL}" alt="">
+                                </div>
+                                <div class="sender-img">
+                                    <img src="${objMessage.image}" alt="">
+                                </div>
+                            </div>
+                            `
+                            bodyChatBox.innerHTML += html
+                            bodyChatBox.scrollTop = bodyChatBox.scrollHeight;
+                        }
                     }
                 })
+
             }
+
         });
+
+    async function asyncCall() {
+        await resolveAfterSomeSeconds();
+        deleting(receiverUid, sender)
+    }
+    asyncCall();
 }
+
+// DELETE MESSAGE
+
+function deleting(receiverUid, sender) {
+    var deleteBtns = document.querySelectorAll('.delete-btn')
+    for (var i = 0; i < deleteBtns.length; i++) {
+        deleteBtns[i].onclick = function () {
+            var deleteName = sender.displayName
+            var deleteMessage = this.parentElement.querySelector('.sender-message').innerHTML
+            var deleteDate = this.parentElement.querySelector('.sender-date').innerHTML
+            var deleteAvatar = this.parentElement.querySelector('img').src
+
+            var deleteObject = {
+                senderName: deleteName,
+                message: deleteMessage,
+                senderImgURL: deleteAvatar,
+                senderDate: deleteDate,
+            }
+
+            db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+                .onSnapshot((doc) => {
+                    console.log(doc.data().message[doc.data().message.length - 1]);
+                    console.log(deleteObject);
+
+                    console.log(doc.data().message[doc.data().message.length - 1] == deleteObject);
+
+                });
+            // .update({
+            //     message: firebase.firestore.FieldValue.arrayRemove(deleteObject)
+            // })
+
+            //send to your doc
+            // db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
+            //     .update({
+            //         message: firebase.firestore.FieldValue.arrayRemove(deleteObject)
+            //     })
+
+        }
+    }
+}
+
 

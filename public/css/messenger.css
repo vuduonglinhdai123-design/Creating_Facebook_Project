@@ -139,10 +139,9 @@ h5 {
 
 .header-userImage {
     margin-right: 10px;
-
 }
 
-.header-userImage  img {
+.header-userImage img {
     width: 55px;
     height: var(--header-userImage-height);
     border-radius: 50%;
@@ -178,6 +177,17 @@ h5 {
     object-fit: cover;
 }
 
+.senderBox-left {
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.senderBox-right {
+    flex-direction: row;
+    justify-content: flex-end;
+    padding-right: 20px;
+}
+
 .senderBox-right .sender-img {
     height: 300px;
     width: 300px;
@@ -196,54 +206,62 @@ h5 {
     width: inherit;
     border-radius: 10px;
     object-fit: cover;
+    cursor: pointer;
+}
+
+.delete-btn {
+    color: #747881;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    font-size: 1.2rem;
+}
+
+.sender-message {
+    height: 40px;
+    line-height: 40px;
+    cursor: pointer;
+    border-radius: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.sender-date {
+    display: none;
+    background-color: #cbcbcc;
+    color: black;
+    border-radius: 30px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    padding: 0 10px;
+    margin-right: 5px;
+}
+
+.senderBox-left .sender-date {
+    margin-left: 5px;
+}
+
+.sender-avatar:hover ~ .sender-date {
+    display: block;
+}
+
+.sender-message:hover ~ .sender-date {
+    display: block;
 }
 
 .senderBox-left .sender-message {
     margin-left: 10px;
 }
 
-.senderBox-left {
-    flex-direction: row;
-    justify-content: flex-start;
-}
-
-.senderBox-right {
-    flex-direction: row;
-    justify-content: flex-end;
-    padding-right: 20px;
-}
-
 .senderBox-right .sender-message {
     margin-right: 10px;
 }
 
-.sender-message {
-    height: 40px;
-    line-height: 40px;
-    /* background-color: #df205c; */
-    border-radius: 50px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
 
-.delete-btn {
-    background-color: #3e4042;
-    outline: none;
-    border: none;
-    cursor: pointer;
-}
 
-.delete-btn {
-    margin-right: 5px;
-}
-
-.delete-btn:hover {
-    background-color: gray;
-}
-
-.delete-btn:focus {
-    outline: none;
-}
 
 /* Footer Chatbox */
 .sending-container {
@@ -260,33 +278,10 @@ h5 {
     width: 100%;
 }
 
-.image-icon {
-    font-size: 33px;
-    margin-right: 10px;
-    cursor: pointer;
-    color:#df205c;
-}
-
 .input-container {
     width: 100%;
     display: flex;
     flex-direction: column;
-}
-
-.sending_img-container {
-    height: 60px;
-    width: 7%;
-    bottom: 45px;
-    border-radius: 10px;
-    position: absolute;
-    background-color: #3a3b3c;
-}
-
-.sending_img-container img {
-    height: 100%;
-    width: 100%;
-    border-radius: 10px;
-    object-fit: cover;
 }
 
 .message {
@@ -341,4 +336,51 @@ h5 {
     color:#df205c;
 }
 
+.sending-btn:hover {
+    font-size: 35px;
+}
 
+.sending_img-container {
+    display: none;
+    height: 60px;
+    width: 7%;
+    bottom: 45px;
+    border-radius: 10px;
+    position: absolute;
+    background-color: #3a3b3c;
+}
+
+.sending_img-container img {
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+    z-index: 10;
+}
+
+.sendImg-btn {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    font-size: 1.8rem;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    line-height: 60px;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: 0.5s;
+    border-radius: 10px;
+
+}
+
+.sending_img-container:hover .sendImg-btn {
+    display: block;
+}
+
+.image-icon {
+    font-size: 33px;
+    margin-right: 10px;
+    cursor: pointer;
+    color:#df205c;
+}
