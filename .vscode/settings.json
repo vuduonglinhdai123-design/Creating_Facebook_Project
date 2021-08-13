@@ -4,7 +4,8 @@
     "cert": "F:\\Projects\\JS\\Product\\Facebook\\localhost.pem",
     "key": "F:\\Projects\\JS\\Product\\Facebook\\localhost.key",
     "passphrase": "123456"
-  }
+  },
+  "liveServer.settings.port": 5501
 }
 
 // "F:\\Projects\\JS\\Product\\Facebook\\localhost.pem"

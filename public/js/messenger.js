@@ -19,7 +19,7 @@ function resolveAfterSomeSeconds() {
     return new Promise(resolve => {
         setTimeout(() => {
             resolve('resolved');
-        }, 1000);
+        }, 500);
     });
 }
 
@@ -305,11 +305,12 @@ function renderMessage(receiverUid, sender) {
                             var html = `
                             <div class="senderBox-right">
                                 <div class="sender-date ">${objMessage.senderDate}</div>
+                                <i class="fas fa-trash delete-btn"></i>
                                 <div class="sender-img">
-                                    <img src="${objMessage.image}" alt="">
+                                    <img src="${objMessage.image}" class="myImg" alt="">
                                 </div>
                                 <div class="sender-avatar">
-                                    <img src="${objMessage.senderImgURL}" alt="">
+                                    <img src="${objMessage.senderImgURL}"alt="">
                                 </div>
                             </div>
                             `
@@ -356,49 +357,134 @@ function renderMessage(receiverUid, sender) {
 
     async function asyncCall() {
         await resolveAfterSomeSeconds();
-        deleting(receiverUid, sender)
+        // deleting(receiverUid, sender)
+        zooming()
     }
     asyncCall();
 }
 
-// DELETE MESSAGE
 
-function deleting(receiverUid, sender) {
-    var deleteBtns = document.querySelectorAll('.delete-btn')
-    for (var i = 0; i < deleteBtns.length; i++) {
-        deleteBtns[i].onclick = function () {
-            var deleteName = sender.displayName
-            var deleteMessage = this.parentElement.querySelector('.sender-message').innerHTML
-            var deleteDate = this.parentElement.querySelector('.sender-date').innerHTML
-            var deleteAvatar = this.parentElement.querySelector('img').src
+function zooming() {
+    // Get the modal
+    var modal = document.getElementById("myModal");
 
-            var deleteObject = {
-                senderName: deleteName,
-                message: deleteMessage,
-                senderImgURL: deleteAvatar,
-                senderDate: deleteDate,
-            }
+    // Get the image and insert it inside the modal - use its "alt" text as a caption
+    var img = document.querySelectorAll(".myImg");
+    var modalImg = document.getElementById("img01");
 
-            db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
-                .onSnapshot((doc) => {
-                    console.log(doc.data().message[doc.data().message.length - 1]);
-                    console.log(deleteObject);
+    for (var i = 0; i < img.length; i++) {
+        img[i].onclick = function () {
+            modal.style.display = "block";
+            modalImg.src = this.src;
+        }
 
-                    console.log(doc.data().message[doc.data().message.length - 1] == deleteObject);
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
 
-                });
-            // .update({
-            //     message: firebase.firestore.FieldValue.arrayRemove(deleteObject)
-            // })
-
-            //send to your doc
-            // db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
-            //     .update({
-            //         message: firebase.firestore.FieldValue.arrayRemove(deleteObject)
-            //     })
-
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
         }
     }
+
 }
+
+
+
+// DELETE MESSAGE
+
+// function deleting(receiverUid, sender) {
+//     var deleteBtns = document.querySelectorAll('.delete-btn')
+//     for (var i = 0; i < deleteBtns.length; i++) {
+//         deleteBtns[i].onclick = function () {
+//             var deleteName = sender.displayName
+//             var deleteDate = this.parentElement.querySelector('.sender-date').innerHTML
+//             var deleteAvatar = this.parentElement.querySelector('img').src
+//             var deleteMessage = this.parentElement.querySelector('.sender-message')
+//             var deleteImg = this.parentElement.querySelector('img')
+//             console.log(this);
+
+//             // delete message
+//             if (deleteMessage) {
+//                 var deleteObject = {
+//                     senderName: deleteName,
+//                     message: deleteMessage.innerHTML,
+//                     senderImgURL: deleteAvatar,
+//                     senderDate: deleteDate,
+//                 }
+
+//                 handleDeleteMsg(receiverUid, sender, deleteObject);
+
+//             }
+
+//             // delete img
+//             else if (deleteImg) {
+//                 var deleteObject = {
+//                     senderName: deleteName,
+//                     image: deleteImg.src,
+//                     senderImgURL: deleteAvatar,
+//                     senderDate: deleteDate,
+//                 }
+
+//                 // db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+//                 //     .update({
+//                 //         message: firebase.firestore.FieldValue.arrayRemove(deleteObject)
+//                 //     })
+
+//                 // db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
+//                 //     .update({
+//                 //         message: firebase.firestore.FieldValue.arrayRemove(deleteObject)
+//                 //     })
+//             }
+
+//             // db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+//             //     .onSnapshot((doc) => {
+//             //         console.log(doc.data().message[doc.data().message.length - 1]);
+//             //         console.log(deleteObject);
+
+//             //         console.log(doc.data().message[doc.data().message.length - 1] == deleteObject);
+
+//             //     });
+//             // .update({
+//             //     message: firebase.firestore.FieldValue.arrayRemove(deleteObject)
+//             // })
+
+//             //send to your doc
+//             // db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
+//             //     .update({
+//             //         message: firebase.firestore.FieldValue.arrayRemove(deleteObject)
+//             //     })
+
+//         }
+//     }
+// }
+
+
+
+// function handleDeleteMsg(receiverUid, sender, deleteObject) {
+//     db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+//         .onSnapshot((doc) => {
+//             var messageArray = doc.data().message
+
+//             messageArray.map(function (msgItem) {
+//                 if (msgItem.senderName == deleteObject.senderName && msgItem.message == deleteObject.message && msgItem.senderImgURL == deleteObject.senderImgURL && msgItem.senderDate == deleteObject.senderDate) {
+//                     db.collection('message').doc(`${receiverUid}`).collection('message').doc(`${sender.uid}`)
+//                         .update({
+//                             message: firebase.firestore.FieldValue.arrayRemove(msgItem)
+//                         })
+
+//                     db.collection('message').doc(`${sender.uid}`).collection('message').doc(`${receiverUid}`)
+//                         .update({
+//                             message: firebase.firestore.FieldValue.arrayRemove(msgItem)
+//                         })
+//                 }
+//             })
+
+//         });
+
+
+// }
+
+
 
 
