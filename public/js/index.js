@@ -23,7 +23,7 @@ function login() {
             // The signed-in user info.
             var user = result.user;
             console.log(user);
-            // boxUser_Container.innerHTML = ""
+            
             localStorage.setItem('userData', JSON.stringify(user))
 
 

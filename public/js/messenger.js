@@ -290,7 +290,6 @@ function renderMessage(receiverUid, sender) {
                             var html = `
                             <div class="senderBox-right">
                                 <div class="sender-date">${objMessage.senderDate}</div>
-                                <i class="fas fa-trash delete-btn"></i>
                                 <div class="sender-message" style="background-color: #df205c;">${objMessage.message}</div> 
                                 <div class="sender-avatar">
                                     <img src="${objMessage.senderImgURL}" alt="">
@@ -305,7 +304,6 @@ function renderMessage(receiverUid, sender) {
                             var html = `
                             <div class="senderBox-right">
                                 <div class="sender-date ">${objMessage.senderDate}</div>
-                                <i class="fas fa-trash delete-btn"></i>
                                 <div class="sender-img">
                                     <img src="${objMessage.image}" class="myImg" alt="">
                                 </div>
@@ -341,7 +339,7 @@ function renderMessage(receiverUid, sender) {
                                     <img src="${objMessage.senderImgURL}" alt="">
                                 </div>
                                 <div class="sender-img">
-                                    <img src="${objMessage.image}" alt="">
+                                    <img src="${objMessage.image}" class="myImg" alt="">
                                 </div>
                             </div>
                             `
