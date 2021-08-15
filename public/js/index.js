@@ -7,7 +7,7 @@ function resolveAfter1Seconds() {
     return new Promise(resolve => {
         setTimeout(() => {
             resolve('resolved');
-        }, 3000);
+        }, 1000);
     });
 }
 
@@ -23,19 +23,21 @@ function login() {
             // The signed-in user info.
             var user = result.user;
             console.log(user);
-            
+
             localStorage.setItem('userData', JSON.stringify(user))
 
 
-            db.collection("users").doc(`${user.uid}`).set({
-                name: user.displayName,
-                email: user.email,
-                imgURL: user.photoURL,
-                docUserID: user.uid
-            })
 
 
-            window.location.assign('./homepage.html');
+            async function asyncCall() {
+                saveUser(user)
+                await resolveAfter1Seconds();
+                window.location.assign('./homepage.html')
+            }
+            asyncCall();
+
+
+            // window.location.assign('./homepage.html');
 
 
 
@@ -60,12 +62,14 @@ function login() {
 
 }
 
-document.querySelector('.logout').onclick = () => {
-    firebase.auth().signOut().then(() => {
-        // Sign-out successful.
-        localStorage.clear();
-        window.location.assign('./index.html')
-      }).catch((error) => {
-        // An error happened.
-      });
+
+
+function saveUser(user) {
+    db.collection("users").doc(`${user.uid}`).set({
+        name: user.displayName,
+        email: user.email,
+        imgURL: user.photoURL,
+        docUserID: user.uid
+    })
 }
+

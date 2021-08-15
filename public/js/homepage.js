@@ -73,3 +73,14 @@ var userObject = {
 document.querySelector('.self-profile').onclick = function() {
     renderUserProfile(user.uid, user.displayName)
 }
+
+// log out 
+document.querySelector('.logout').onclick = () => {
+    firebase.auth().signOut().then(() => {
+        // Sign-out successful.
+        localStorage.clear();
+        window.location.assign('./index.html')
+    }).catch((error) => {
+        // An error happened.
+    });
+}
